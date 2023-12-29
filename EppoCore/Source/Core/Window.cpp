@@ -5,6 +5,7 @@
 #include "Event/KeyEvent.h"
 #include "Event/MouseEvent.h"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 namespace Eppo
@@ -30,6 +31,12 @@ namespace Eppo
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 		m_Window = glfwCreateWindow(m_Specification.Width, m_Specification.Height, m_Specification.Title.c_str(), nullptr, nullptr);
 		EPPO_ASSERT(m_Window);
+
+		// Initialize OpenGL
+		glfwMakeContextCurrent(m_Window);
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		EPPO_ASSERT(status);
+		EPPO_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 6), "Application requires at least OpenGL version 4.6!");
 
 		// Setup event callbacks
 		glfwSetWindowUserPointer(m_Window, &m_Data);

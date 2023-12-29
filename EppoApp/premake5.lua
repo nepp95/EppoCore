@@ -18,6 +18,7 @@ project "EppoApp"
         "%{wks.location}/EppoCore/Vendor",
 
         "%{IncludeDir.glm}",
+        "%{IncludeDir.imgui}",
         "%{IncludeDir.spdlog}"
     }
 

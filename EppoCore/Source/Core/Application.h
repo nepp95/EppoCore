@@ -4,6 +4,7 @@
 #include "Core/Window.h"
 #include "Event/ApplicationEvent.h"
 #include "Event/Event.h"
+#include "UI/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -12,8 +13,8 @@ namespace Eppo
 	struct ApplicationSpecification
 	{
 		std::string Title;
-		uint32_t Width = 800;
-		uint32_t Height = 600;
+		uint32_t Width = 1280;
+		uint32_t Height = 720;
 	};
 
 	class Application
@@ -42,6 +43,7 @@ namespace Eppo
 	private:
 		ApplicationSpecification m_Specification;
 		std::unique_ptr<Window> m_Window;
+		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
 		std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
 		bool m_Running = true;

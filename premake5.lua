@@ -18,6 +18,7 @@ workspace "EppoCore"
     group "Dependencies"
         include "EppoCore/Vendor/glad"
         include "EppoCore/Vendor/glfw"
+        include "EppoCore/Vendor/imgui"
         include "EppoCore/Vendor/spdlog"
     
     group "Core"

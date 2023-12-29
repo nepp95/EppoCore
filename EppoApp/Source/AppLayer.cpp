@@ -1,13 +1,9 @@
 #include "AppLayer.h"
 
-AppLayer::AppLayer()
-{
-
-}
+#include <imgui/imgui.h>
 
 void AppLayer::OnAttach()
 {
-
 }
 
 void AppLayer::OnDetach()
@@ -27,5 +23,5 @@ void AppLayer::OnUpdate(float timestep)
 
 void AppLayer::OnUIRender()
 {
-
+	ImGui::ShowDemoWindow();
 }

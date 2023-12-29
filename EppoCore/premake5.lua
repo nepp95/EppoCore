@@ -24,14 +24,16 @@ project "EppoCore"
         "%{IncludeDir.glad}",
         "%{IncludeDir.glfw}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.imgui}",
 		"%{IncludeDir.spdlog}",
         "%{IncludeDir.stb}"
     }
 
 	links {
-		"Glad",
-		"Glfw",
-		"Spdlog",
+		"glad",
+		"glfw",
+        "imgui",
+		"spdlog",
 		"opengl32.lib"
 	}
 

@@ -13,9 +13,14 @@ namespace Eppo
 		EPPO_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
+		// Create window
 		WindowSpecification spec(m_Specification.Title, m_Specification.Width, m_Specification.Height);
 		m_Window = std::make_unique<Window>(spec);
 		m_Window->SetEventCallbackFn(BIND_EVENT_FN(Application::OnEvent));
+
+		// Create UI layer
+		m_ImGuiLayer = std::make_shared<ImGuiLayer>();
+		PushLayer(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -54,8 +59,17 @@ namespace Eppo
 
 			m_Window->PollEvents();
 
+			// Update layers
 			for (const auto& layer : m_LayerStack)
 				layer->OnUpdate(ts);
+
+			// Update UI
+			m_ImGuiLayer->Begin();
+
+			for (const auto& layer : m_LayerStack)
+				layer->OnUIRender();
+
+			m_ImGuiLayer->End();
 
 			m_Window->SwapBuffers();
 		}

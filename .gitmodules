@@ -7,3 +7,6 @@
 [submodule "EppoCore/Vendor/spdlog"]
 	path = EppoCore/Vendor/spdlog
 	url = https://github.com/nepp95/spdlog
+[submodule "EppoCore/Vendor/imgui"]
+	path = EppoCore/Vendor/imgui
+	url = https://github.com/nepp95/imgui

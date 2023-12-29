@@ -7,7 +7,7 @@ using namespace Eppo;
 class AppLayer : public Layer
 {
 public:
-	AppLayer();
+	AppLayer() = default;
 	~AppLayer() override = default;
 
 	void OnAttach() override;
