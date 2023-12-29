@@ -14,7 +14,7 @@ namespace Eppo
 		s_Instance = this;
 
 		WindowSpecification spec(m_Specification.Title, m_Specification.Width, m_Specification.Height);
-		m_Window = CreateScope<Window>(spec);
+		m_Window = std::make_unique<Window>(spec);
 		m_Window->SetEventCallbackFn(BIND_EVENT_FN(Application::OnEvent));
 	}
 

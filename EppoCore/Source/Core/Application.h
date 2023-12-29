@@ -41,7 +41,7 @@ namespace Eppo
 
 	private:
 		ApplicationSpecification m_Specification;
-		Scope<Window> m_Window;
+		std::unique_ptr<Window> m_Window;
 		std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
 		bool m_Running = true;
