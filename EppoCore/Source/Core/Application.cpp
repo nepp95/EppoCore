@@ -1,0 +1,83 @@
+#include "pch.h"
+#include "Application.h"
+
+#include <GLFW/glfw3.h>
+
+namespace Eppo
+{
+	Application* Application::s_Instance = nullptr;
+
+	Application::Application(const ApplicationSpecification& specification)
+		: m_Specification(specification)
+	{
+		EPPO_ASSERT(!s_Instance, "Application already exists!");
+		s_Instance = this;
+
+		WindowSpecification spec(m_Specification.Title, m_Specification.Width, m_Specification.Height);
+		m_Window = CreateScope<Window>(spec);
+		m_Window->SetEventCallbackFn(BIND_EVENT_FN(Application::OnEvent));
+	}
+
+	Application::~Application()
+	{
+
+	}
+
+	void Application::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
+
+		for (const auto& layer : m_LayerStack)
+		{
+			if (e.Handled)
+				break;
+
+			layer->OnEvent(e);
+		}
+	}
+
+	void Application::PushLayer(const std::shared_ptr<Layer>& layer)
+	{
+		m_LayerStack.emplace_back(layer);
+		layer->OnAttach();
+	}
+
+	void Application::Run()
+	{
+		while (m_Running)
+		{
+			float time = (float)glfwGetTime();
+			float ts = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
+			m_Window->PollEvents();
+
+			for (const auto& layer : m_LayerStack)
+				layer->OnUpdate(ts);
+
+			m_Window->SwapBuffers();
+		}
+	}
+
+	bool Application::OnWindowClose(WindowCloseEvent& e)
+	{
+		m_Running = false;
+
+		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+		{
+			m_Minimized = true;
+			return false;
+		}
+
+		m_Minimized = false;
+
+		return false;
+	}
+}
