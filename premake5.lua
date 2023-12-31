@@ -23,5 +23,4 @@ workspace "EppoCore"
     
     group "Core"
         include "EppoCore"
-        include "EppoApp"
     group ""
