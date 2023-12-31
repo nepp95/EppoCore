@@ -1,3 +1,10 @@
+include "../../Dependencies.lua"
+
+include "Vendor/glad"
+include "Vendor/glfw"
+include "Vendor/imgui"
+include "Vendor/spdlog"
+
 project "EppoCore"
     kind "StaticLib"
     language "C++"
