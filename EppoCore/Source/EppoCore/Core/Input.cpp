@@ -41,4 +41,10 @@ namespace Eppo
 	{
 		return GetMousePosition().y;
 	}
+
+	void Input::SetCursorMode(CursorMode mode)
+	{
+		GLFWwindow* window = Application::Get().GetWindow().GetNativeWindow();
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL + (int)mode);
+	}
 }

@@ -7,6 +7,13 @@
 
 namespace Eppo
 {
+	enum class CursorMode
+	{
+		Normal = 0,
+		Hidden = 1,
+		Locked = 2
+	};
+
 	class Input
 	{
 	public:
@@ -16,5 +23,6 @@ namespace Eppo
 		static glm::vec2 GetMousePosition();
 		static float GetMouseX();
 		static float GetMouseY();
+		static void SetCursorMode(CursorMode mode);
 	};
 }
