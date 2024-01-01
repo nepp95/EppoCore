@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Application.h"
+#include "EppoCore/Core/Application.h"
 
 int main(int argc, char** argv)
 {

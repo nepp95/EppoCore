@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ImGuiLayer.h"
 
-#include "Core/Application.h"
+#include "EppoCore/Core/Application.h"
 
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>

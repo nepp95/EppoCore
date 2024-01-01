@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Core/Base.h"
+#include "EppoCore/Core/Base.h"
 
 // Core
-#include "Core/Application.h"
-#include "Core/Image.h"
-#include "Core/KeyCodes.h"
-#include "Core/Layer.h"
-#include "Core/MouseCodes.h"
-#include "Core/Timer.h"
+#include "EppoCore/Core/Application.h"
+#include "EppoCore/Core/Image.h"
+#include "EppoCore/Core/KeyCodes.h"
+#include "EppoCore/Core/Layer.h"
+#include "EppoCore/Core/MouseCodes.h"
+#include "EppoCore/Core/Timer.h"
 
 // Events
-#include "Event/ApplicationEvent.h"
-#include "Event/KeyEvent.h"
-#include "Event/MouseEvent.h"
+#include "EppoCore/Event/ApplicationEvent.h"
+#include "EppoCore/Event/KeyEvent.h"
+#include "EppoCore/Event/MouseEvent.h"

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Log.h"
 
-#include <Spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Eppo
 {

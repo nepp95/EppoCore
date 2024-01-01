@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "Window.h"
 
-#include "Event/ApplicationEvent.h"
-#include "Event/KeyEvent.h"
-#include "Event/MouseEvent.h"
+#include "EppoCore/Event/ApplicationEvent.h"
+#include "EppoCore/Event/KeyEvent.h"
+#include "EppoCore/Event/MouseEvent.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

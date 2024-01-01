@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Core/Layer.h"
-#include "Core/Window.h"
-#include "Event/ApplicationEvent.h"
-#include "Event/Event.h"
-#include "UI/ImGuiLayer.h"
+#include "EppoCore/Core/Layer.h"
+#include "EppoCore/Core/Window.h"
+#include "EppoCore/Event/ApplicationEvent.h"
+#include "EppoCore/Event/Event.h"
+#include "EppoCore/UI/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 

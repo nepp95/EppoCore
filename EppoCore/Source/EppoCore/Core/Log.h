@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Base.h"
+#include "EppoCore/Core/Base.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>

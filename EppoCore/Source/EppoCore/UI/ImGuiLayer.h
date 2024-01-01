@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Layer.h"
+#include "EppoCore/Core/Layer.h"
 
 namespace Eppo
 {

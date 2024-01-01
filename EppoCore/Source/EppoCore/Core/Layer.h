@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Event/Event.h"
+#include "EppoCore/Event/Event.h"
 
 namespace Eppo
 {

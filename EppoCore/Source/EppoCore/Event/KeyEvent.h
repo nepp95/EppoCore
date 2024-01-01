@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/KeyCodes.h"
-#include "Event/Event.h"
+#include "EppoCore/Core/KeyCodes.h"
+#include "EppoCore/Event/Event.h"
 
 #include <sstream>
 
