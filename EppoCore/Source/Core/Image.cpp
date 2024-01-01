@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Image.h"
 
+#include <glad/glad.h>
+
 namespace Eppo
 {
 	Image::Image(uint32_t width, uint32_t height)
