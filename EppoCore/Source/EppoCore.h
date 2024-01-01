@@ -8,6 +8,7 @@
 #include "EppoCore/Core/KeyCodes.h"
 #include "EppoCore/Core/Layer.h"
 #include "EppoCore/Core/MouseCodes.h"
+#include "EppoCore/Core/Random.h"
 #include "EppoCore/Core/Timer.h"
 
 // Events
