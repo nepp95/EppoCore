@@ -2,6 +2,9 @@
 
 #include "EppoCore/Core/Base.h"
 
+// Buffers
+#include "EppoCore/Buffer/UniformBuffer.h"
+
 // Core
 #include "EppoCore/Core/Application.h"
 #include "EppoCore/Core/Buffer.h"
@@ -19,3 +22,4 @@
 
 // Shaders
 #include "EppoCore/Shader/ComputeShader.h"
+#include "EppoCore/Shader/Query.h"

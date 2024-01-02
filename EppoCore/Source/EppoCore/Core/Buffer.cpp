@@ -5,20 +5,12 @@
 
 namespace Eppo
 {
-	Buffer::Buffer(uint32_t size)
-		: m_Size(size)
+	Buffer::Buffer(uint32_t size, uint32_t binding)
+		: m_Size(size), m_Binding(binding)
 	{
 		glCreateBuffers(1, &m_RendererID);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_RendererID);
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, m_RendererID);
 		glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-	}
-
-	Buffer::Buffer(void* data, uint32_t size)
-		: m_Size(size)
-	{
-		glCreateBuffers(1, &m_RendererID);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_RendererID);
-		glBufferData(GL_SHADER_STORAGE_BUFFER, size, data, GL_STATIC_DRAW);
 	}
 
 	Buffer::~Buffer()
@@ -26,9 +18,9 @@ namespace Eppo
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void Buffer::Bind() const
+	void Buffer::SetData(void* data, uint32_t size)
 	{
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_RendererID);
+		glNamedBufferSubData(m_RendererID, 0, size, data);
 	}
 
 	glm::vec4* Buffer::MapBuffer() const

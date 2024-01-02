@@ -53,7 +53,7 @@ namespace Eppo
 
 	void ComputeShader::MemBarrier() const
 	{
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 	}
 
 	void ComputeShader::CheckCompileErrors(GLuint shader, std::string type)
