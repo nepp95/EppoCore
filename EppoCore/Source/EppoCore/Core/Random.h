@@ -85,7 +85,7 @@ namespace Eppo
 		}
 
 	private:
-		static std::mt19937_64 s_Engine64;
-		static std::mt19937 s_Engine32;
+		inline static std::mt19937_64 s_Engine64;
+		inline static std::mt19937 s_Engine32;
 	};
 }
