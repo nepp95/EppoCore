@@ -41,8 +41,25 @@ project "EppoCore"
 		"glfw",
         "imgui",
 		"spdlog",
-		"opengl32.lib"
 	}
+
+    filter "system:windows"
+        defines {
+            "EPPO_WINDOWS"
+        }
+
+        links {
+		    "opengl32.lib"
+        }
+    
+    filter "system:linux"
+        defines {
+            "EPPO_LINUX"
+        }
+
+        links {
+            "libGL"
+        }
 
     filter "configurations:Debug"
         defines "EPPO_DEBUG"
