@@ -57,10 +57,6 @@ project "EppoCore"
             "EPPO_LINUX"
         }
 
-        links {
-            "libGL"
-        }
-
     filter "configurations:Debug"
         defines "EPPO_DEBUG"
         runtime "Debug"
