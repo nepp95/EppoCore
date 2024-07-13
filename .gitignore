@@ -6,5 +6,4 @@
 Makefile
 
 # Binaries
-/Bin
-/Bin-Int
+/build
