@@ -21,6 +21,11 @@ set(INCLUDE_DIRS
 set(PCH_HEADER "EppoCore/Source/pch.h")
 set(PCH_SOURCE "EppoCore/Source/pch.cpp")
 
+# Packages
+find_package(glfw3 REQUIRED)
+add_subdirectory("EppoCore/Vendor/glad")
+add_subdirectory("EppoCore/Vendor/imgui")
+
 # Create target
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
