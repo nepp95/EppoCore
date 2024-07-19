@@ -28,7 +28,12 @@ namespace Eppo
 
 	}
 
-	void Application::OnEvent(Event& e)
+    void Application::Close()
+    {
+		m_Running = false;
+    }
+
+    void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
@@ -77,7 +82,7 @@ namespace Eppo
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
-		m_Running = false;
+		Close();
 
 		return true;
 	}

@@ -23,6 +23,8 @@ namespace Eppo
 		Application(const ApplicationSpecification& specification);
 		virtual ~Application();
 
+		void Close();
+
 		void OnEvent(Event& e);
 
 		bool IsMinimized() const { return m_Minimized; }
