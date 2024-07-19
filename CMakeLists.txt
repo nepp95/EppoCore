@@ -29,6 +29,12 @@ add_subdirectory("EppoCore/Vendor/imgui")
 # Create target
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
+if (CMAKE_HOST_LINUX)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE EPPO_LINUX)
+elseif (CMAKE_HOST_WIN32)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE EPPO_WINDOWS)
+endif()
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE EPPO_LINUX)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PCH_HEADER})

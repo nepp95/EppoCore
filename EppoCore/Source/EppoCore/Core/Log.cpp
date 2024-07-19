@@ -11,7 +11,7 @@ namespace Eppo
 	{
 		spdlog::set_pattern("%^[%T][%l]: %v%$");
 
-		s_Logger = spdlog::stdout_color_mt("EppoRays");
+		s_Logger = spdlog::stdout_color_mt("EppoCore");
 		s_Logger->set_level(spdlog::level::trace);
 	}
 }
