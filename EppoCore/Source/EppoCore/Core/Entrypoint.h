@@ -6,7 +6,9 @@ int main(int argc, char** argv)
 {
 	Eppo::Log::Init();
 
-	auto app = Eppo::CreateApplication();
+	ApplicationCommandLineArgs args(argc, argv);
+
+	auto app = Eppo::CreateApplication(args);
 	app->Run();
 
 	delete app;

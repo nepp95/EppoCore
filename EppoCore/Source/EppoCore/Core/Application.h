@@ -10,11 +10,32 @@ int main(int argc, char** argv);
 
 namespace Eppo
 {
+	struct ApplicationCommandLineArgs
+	{
+		ApplicationCommandLineArgs() = default;
+		ApplicationCommandLineArgs(int argc, char** argv)
+			: Count(argc), Args(argv)
+		{}
+
+		int Count = 0;
+		char** Args = nullptr;
+
+		const char* operator[](int index) const
+		{
+			EPPO_ASSERT((index < Count));
+			if (index >= Count)
+				return "";
+			return Args[index];
+		}
+	};
+
 	struct ApplicationSpecification
 	{
 		std::string Title;
 		uint32_t Width = 1280;
 		uint32_t Height = 720;
+
+		ApplicationCommandLineArgs CommandLineArgs;
 	};
 
 	class Application
@@ -57,5 +78,5 @@ namespace Eppo
 	};
 
 	// To be implemented by the client using this library
-	Application* CreateApplication();
+	Application* CreateApplication(ApplicationCommandLineArgs args);
 }

@@ -13,6 +13,7 @@ namespace Eppo
 		EPPO_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
+		#ifdef EPPO_HEADLESS
 		// Create window
 		WindowSpecification spec(m_Specification.Title, m_Specification.Width, m_Specification.Height);
 		m_Window = std::make_unique<Window>(spec);
@@ -21,6 +22,7 @@ namespace Eppo
 		// Create UI layer
 		m_ImGuiLayer = std::make_shared<ImGuiLayer>();
 		PushLayer(m_ImGuiLayer);
+		#endif
 	}
 
 	Application::~Application()
