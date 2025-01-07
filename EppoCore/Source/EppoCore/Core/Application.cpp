@@ -7,13 +7,12 @@ namespace Eppo
 {
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const ApplicationSpecification& specification)
-		: m_Specification(specification)
+	Application::Application(ApplicationSpecification specification)
+		: m_Specification(std::move(specification))
 	{
 		EPPO_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
 
-		#ifdef EPPO_HEADLESS
 		// Create window
 		WindowSpecification spec(m_Specification.Title, m_Specification.Width, m_Specification.Height);
 		m_Window = std::make_unique<Window>(spec);
@@ -22,12 +21,11 @@ namespace Eppo
 		// Create UI layer
 		m_ImGuiLayer = std::make_shared<ImGuiLayer>();
 		PushLayer(m_ImGuiLayer);
-		#endif
 	}
 
 	Application::~Application()
 	{
-
+		s_Instance = nullptr;
 	}
 
     void Application::Close()
@@ -50,8 +48,23 @@ namespace Eppo
 		}
 	}
 
-	void Application::PushLayer(const std::shared_ptr<Layer>& layer)
-	{
+    const ApplicationSpecification &Application::GetSpecification() const
+    {
+        return m_Specification;
+    }
+
+    const Window &Application::GetWindow() const
+    {
+        return *m_Window;
+    }
+
+    Application &Application::Get()
+    {
+        return *s_Instance;
+    }
+
+    void Application::PushLayer(const std::shared_ptr<Layer> &layer)
+    {
 		m_LayerStack.emplace_back(layer);
 		layer->OnAttach();
 	}

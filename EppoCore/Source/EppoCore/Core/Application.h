@@ -38,22 +38,21 @@ namespace Eppo
 		ApplicationCommandLineArgs CommandLineArgs;
 	};
 
-	class Application
+	class Application final
 	{
 	public:
-		Application(const ApplicationSpecification& specification);
-		virtual ~Application();
+		Application(ApplicationSpecification specification);
+		~Application();
 
 		void Close();
-
 		void OnEvent(Event& e);
 
 		bool IsMinimized() const { return m_Minimized; }
 
-		const ApplicationSpecification& GetSpecification() const { return m_Specification; }
-		const Window& GetWindow() const { return *m_Window; }
+		const ApplicationSpecification& GetSpecification() const;
+		const Window& GetWindow() const;
 
-		static Application& Get() { return *s_Instance; }
+		static Application& Get();
 
 	protected:
 		void PushLayer(const std::shared_ptr<Layer>& layer);
