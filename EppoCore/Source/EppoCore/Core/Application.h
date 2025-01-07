@@ -38,7 +38,7 @@ namespace Eppo
 		ApplicationCommandLineArgs CommandLineArgs;
 	};
 
-	class Application final
+	class Application
 	{
 	public:
 		Application(ApplicationSpecification specification);

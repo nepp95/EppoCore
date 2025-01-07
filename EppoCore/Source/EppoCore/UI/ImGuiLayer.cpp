@@ -12,7 +12,6 @@ namespace Eppo
 {
 	void ImGuiLayer::OnAttach()
 	{
-		#ifdef EPPO_HEADLESS
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
@@ -36,43 +35,35 @@ namespace Eppo
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init("#version 460");
-		#endif
+		ImGui_ImplOpenGL3_Init("#version 450");
 	}
 
 	void ImGuiLayer::OnDetach()
 	{
-		#ifdef EPPO_HEADLESS
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-		#endif
 	}
 
 	void ImGuiLayer::OnEvent(Event& e)
 	{
-		#ifdef EPPO_HEADLESS
 		if (m_BlockEvents)
 		{
 			ImGuiIO& io = ImGui::GetIO();
 			e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
 			e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 		}
-		#endif
 	}
 
 	void ImGuiLayer::Begin()
 	{
-		#ifdef EPPO_HEADLESS
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		#endif
 	}
 
 	void ImGuiLayer::End()
 	{
-		#ifdef EPPO_HEADLESS
 		ImGuiIO& io = ImGui::GetIO();
 		auto& app = Application::Get();
 	
@@ -89,6 +80,5 @@ namespace Eppo
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backupContext);
 		}
-		#endif
 	}
 }
