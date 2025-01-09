@@ -5,7 +5,7 @@
 
 namespace Eppo
 {
-	Image::Image(uint32_t width, uint32_t height)
+	Image::Image(const uint32_t width, const uint32_t height)
 		: m_Width(width), m_Height(height)
 	{
 		m_InternalFormat = GL_RGBA8;
@@ -26,12 +26,12 @@ namespace Eppo
 		glDeleteTextures(1, &m_RendererID);
 	}
 
-	void Image::SetData(void* data, uint32_t size)
+	void Image::SetData(const void* data, uint32_t size) const
 	{
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void Image::Bind(uint32_t slot)
+	void Image::Bind(const uint32_t slot) const
 	{
 		glBindTextureUnit(slot, m_RendererID);
 	}

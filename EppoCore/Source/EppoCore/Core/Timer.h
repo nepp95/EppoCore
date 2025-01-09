@@ -2,8 +2,6 @@
 
 #include <chrono>
 
-using namespace std::chrono;
-
 namespace Eppo 
 {
 	class Timer
@@ -11,20 +9,20 @@ namespace Eppo
 	public:
 		Timer()
 		{
-			m_startPoint = steady_clock::now();
+			m_startPoint = std::chrono::steady_clock::now();
 		}
 
-		uint64_t GetElapsedMilliseconds() const
+		[[nodiscard]] uint64_t GetElapsedMilliseconds() const
 		{
-			return duration_cast<milliseconds>(steady_clock::now() - m_startPoint).count();
+			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_startPoint).count();
 		}
 
-		uint64_t GetElapsedMicroseconds() const
+		[[nodiscard]] uint64_t GetElapsedMicroseconds() const
 		{
-			return duration_cast<microseconds>(steady_clock::now() - m_startPoint).count();
+			return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - m_startPoint).count();
 		}
 
 	private:
-		steady_clock::time_point m_startPoint;
+		std::chrono::steady_clock::time_point m_startPoint;
 	};
 }

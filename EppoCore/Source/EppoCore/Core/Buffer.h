@@ -41,7 +41,7 @@ namespace Eppo
         {
             Release();
 
-            Data = new uint8_t[size];
+            Data = new uint8_t[size]{};
             Size = size;
         }
 

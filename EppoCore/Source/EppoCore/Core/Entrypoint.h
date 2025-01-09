@@ -4,11 +4,11 @@
 
 int main(int argc, char** argv)
 {
-	Eppo::Log::Init();
+	Log::Init();
 
-	ApplicationCommandLineArgs args(argc, argv);
+	const ApplicationCommandLineArgs args(argc, argv);
 
-	auto app = Eppo::CreateApplication(args);
+	const auto app = Eppo::CreateApplication(args);
 	app->Run();
 
 	delete app;

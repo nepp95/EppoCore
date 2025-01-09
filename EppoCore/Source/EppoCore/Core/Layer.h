@@ -1,7 +1,5 @@
 #pragma once
 
-#include "EppoCore/Event/Event.h"
-
 namespace Eppo
 {
 	class Layer
@@ -11,8 +9,7 @@ namespace Eppo
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		
-		virtual void OnEvent(Event& e) {}
+
 		virtual void OnUpdate(float timestep) {}
 		virtual void OnUIRender() {}
 	};

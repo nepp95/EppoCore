@@ -1,9 +1,0 @@
-# IDE
-.vs
-.vscode
-*.vcxproj*
-*.sln
-Makefile
-
-# Binaries
-/build
