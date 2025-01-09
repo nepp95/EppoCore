@@ -51,6 +51,14 @@ elseif (CMAKE_HOST_WIN32)
     target_compile_definitions(EppoCore_Headless PUBLIC EPPO_WINDOWS EPPO_HEADLESS)
 endif()
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(EppoCore_GUI PUBLIC EPPO_DEBUG)
+    target_compile_definitions(EppoCore_Headless PUBLIC EPPO_DEBUG)
+else()
+    target_compile_definitions(EppoCore_GUI PUBLIC EPPO_RELEASE)
+    target_compile_definitions(EppoCore_Headless PUBLIC EPPO_RELEASE)
+endif()
+
 # Packages
 add_subdirectory("EppoCore/Vendor/glad")
 add_subdirectory("EppoCore/Vendor/imgui")
