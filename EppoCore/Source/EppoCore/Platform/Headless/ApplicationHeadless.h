@@ -11,7 +11,7 @@ namespace Eppo
 	{
 		ApplicationCommandLineArgs() = default;
 
-		ApplicationCommandLineArgs(const int argc, char** argv)
+		ApplicationCommandLineArgs(int argc, char** argv)
 			: Count(argc), Args(argv)
 		{}
 
@@ -40,6 +40,7 @@ namespace Eppo
 	{
 	public:
 		explicit Application(ApplicationSpecification specification);
+
 		~Application();
 
 		void Close();
@@ -56,13 +57,14 @@ namespace Eppo
 
 	private:
 		ApplicationSpecification m_Specification;
-		std::vector<std::shared_ptr<Layer>> m_LayerStack;
+		std::vector<std::shared_ptr<Layer> > m_LayerStack;
 
 		bool m_Running = true;
 		float m_LastFrameTime = 0.0f;
 		Timer m_Timer;
 
 		static Application* s_Instance;
+
 		friend int ::main(int argc, char** argv);
 	};
 

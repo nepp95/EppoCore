@@ -31,12 +31,12 @@ namespace Eppo
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		auto& app = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+        const auto& app = Application::Get();
+        const auto window = app.GetWindow().GetNativeWindow();
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 450");
-	}
+    }
 
 	void ImGuiLayer::OnDetach()
 	{
@@ -45,7 +45,13 @@ namespace Eppo
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiLayer::Begin()
+    void ImGuiLayer::OnUpdate(float timestep)
+    {}
+
+    void ImGuiLayer::OnUIRender()
+    {}
+
+    void ImGuiLayer::Begin()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -55,7 +61,7 @@ namespace Eppo
 	void ImGuiLayer::End()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		auto& app = Application::Get();
+        const auto& app = Application::Get();
 	
 		io.DisplaySize = ImVec2(static_cast<float>(app.GetWindow().GetWidth()), static_cast<float>(app.GetWindow().GetHeight()));
 
