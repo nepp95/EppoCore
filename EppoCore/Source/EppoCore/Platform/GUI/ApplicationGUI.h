@@ -30,7 +30,7 @@ namespace Eppo
 
 	struct ApplicationSpecification
 	{
-		std::string Title;
+		std::string Title{};
 		uint32_t Width = 1280;
 		uint32_t Height = 720;
 

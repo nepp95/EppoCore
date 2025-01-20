@@ -57,7 +57,7 @@ namespace Eppo
 	{
 		while (m_Running)
 		{
-			const float time = static_cast<float>(glfwGetTime());
+			const auto time = static_cast<float>(glfwGetTime());
 			const float ts = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
