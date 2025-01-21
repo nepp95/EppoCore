@@ -31,6 +31,7 @@ BraceWrapping:
   AfterObjCDeclaration: false
 BreakBeforeBraces: Custom
 ColumnLimit: 140
+ContinuationIndentWidth: 0
 Cpp11BracedListStyle: false
 IncludeBlocks: Regroup
 IncludeCategories: 

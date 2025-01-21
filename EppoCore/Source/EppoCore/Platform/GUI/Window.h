@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EppoCore/Platform/GUI/Event/Event.h"
+
 struct GLFWwindow;
 
 namespace Eppo
@@ -10,7 +12,7 @@ namespace Eppo
         uint32_t Width;
         uint32_t Height;
 
-        WindowSpecification(std::string title, const uint32_t width = 800, const uint32_t height = 600)
+        WindowSpecification(std::string title, const uint32_t width = 1280, const uint32_t height = 720)
             : Title(std::move(title)), Width(width), Height(height)
         {}
     };
@@ -18,9 +20,12 @@ namespace Eppo
     class Window
     {
     public:
+        using EventCallbackFn = std::function<void(Event&)>;
+
         explicit Window(WindowSpecification specification);
         ~Window();
 
+        void SetEventCallbackFn(const EventCallbackFn& callback);
         static void PollEvents();
         void SwapBuffers() const;
 
@@ -31,13 +36,8 @@ namespace Eppo
 
     private:
         WindowSpecification m_Specification;
-
-        struct WindowData
-        {
-            uint32_t Width;
-            uint32_t Height;
-        } m_Data;
-
         GLFWwindow* m_Window;
+
+        EventCallbackFn m_EventCallback;
     };
-} // namespace Eppo
+}

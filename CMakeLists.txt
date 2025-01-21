@@ -44,10 +44,10 @@ add_library(EppoCore_GUI STATIC ${SOURCES_GUI})
 add_library(EppoCore_Headless STATIC ${SOURCES_HEADLESS})
 
 if (CMAKE_HOST_LINUX)
-    target_compile_definitions(EppoCore_GUI PUBLIC EPPO_LINUX)
+    target_compile_definitions(EppoCore_GUI PUBLIC EPPO_LINUX EPPO_GUI)
     target_compile_definitions(EppoCore_Headless PUBLIC EPPO_LINUX EPPO_HEADLESS)
 elseif (CMAKE_HOST_WIN32)
-    target_compile_definitions(EppoCore_GUI PUBLIC EPPO_WINDOWS)
+    target_compile_definitions(EppoCore_GUI PUBLIC EPPO_WINDOWS EPPO_GUI)
     target_compile_definitions(EppoCore_Headless PUBLIC EPPO_WINDOWS EPPO_HEADLESS)
 endif()
 

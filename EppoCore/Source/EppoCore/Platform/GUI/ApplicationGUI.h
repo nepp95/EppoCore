@@ -2,6 +2,7 @@
 
 #include "EppoCore/Core/Layer.h"
 #include "EppoCore/Platform/GUI/Window.h"
+#include "EppoCore/Platform/GUI/Event/ApplicationEvent.h"
 #include "EppoCore/Platform/GUI/UI/ImGuiLayer.h"
 
 int main(int argc, char** argv);
@@ -44,6 +45,7 @@ namespace Eppo
 		~Application();
 
 		void Close();
+		void OnEvent(Event& e);
 
 		[[nodiscard]] const ApplicationSpecification& GetSpecification() const;
 		[[nodiscard]] const Window& GetWindow() const;
@@ -52,6 +54,9 @@ namespace Eppo
 
 	protected:
 		void PushLayer(const std::shared_ptr<Layer>& layer);
+
+		bool OnWindowClose(const WindowCloseEvent& e);
+		bool OnWindowResize(const WindowResizeEvent& e);
 
 	private:
 		void Run();
@@ -63,6 +68,7 @@ namespace Eppo
 		std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
 		bool m_Running = true;
+		bool m_IsMinimized = false;
 		float m_LastFrameTime = 0.0f;
 
 		static Application* s_Instance;
