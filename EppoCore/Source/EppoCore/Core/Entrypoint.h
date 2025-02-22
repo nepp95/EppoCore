@@ -5,11 +5,11 @@
 
 int main(int argc, char** argv)
 {
-	Eppo::Log::Init();
+	Log::Init();
 
-	const Eppo::ApplicationCommandLineArgs args(argc, argv);
+	const ApplicationCommandLineArgs args(argc, argv);
 
-	const auto app = Eppo::CreateApplication(args);
+	const auto app = CreateApplication(args);
 	app->Run();
 
 	delete app;

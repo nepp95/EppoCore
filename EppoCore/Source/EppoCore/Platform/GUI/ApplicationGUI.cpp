@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "ApplicationGUI.h"
 
+#include "Renderer.h"
+
 #include <GLFW/glfw3.h>
 
 namespace Eppo
@@ -19,6 +21,9 @@ namespace Eppo
         {
             OnEvent(e);
         });
+
+        // Initialize renderer
+        m_Renderer = std::make_shared<Renderer>();
 
         // Create UI layer
         m_ImGuiLayer = std::make_shared<ImGuiLayer>();
@@ -41,7 +46,7 @@ namespace Eppo
         dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
         dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 
-        for (const auto layer : m_LayerStack)
+        for (const auto& layer : m_LayerStack)
         {
             if (e.Handled)
                 break;
@@ -53,6 +58,11 @@ namespace Eppo
     const ApplicationSpecification& Application::GetSpecification() const
     {
         return m_Specification;
+    }
+
+    std::shared_ptr<Renderer> Application::GetRenderer() const
+    {
+        return m_Renderer;
     }
 
     const Window& Application::GetWindow() const

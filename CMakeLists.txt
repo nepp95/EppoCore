@@ -61,10 +61,10 @@ endif()
 
 # Packages
 add_subdirectory("EppoCore/Vendor/glad")
-add_subdirectory("EppoCore/Vendor/imgui")
 add_subdirectory("EppoCore/Vendor/glfw")
+add_subdirectory("EppoCore/Vendor/imgui")
 
-target_link_libraries(EppoCore_GUI PUBLIC glfw glad imgui)
+target_link_libraries(EppoCore_GUI PUBLIC glad glfw imgui)
 target_include_directories(EppoCore_GUI PUBLIC ${INCLUDE_DIRS_GUI})
 target_include_directories(EppoCore_Headless PUBLIC ${INCLUDE_DIRS_HEADLESS})
 target_precompile_headers(EppoCore_GUI PUBLIC ${PCH_HEADER})

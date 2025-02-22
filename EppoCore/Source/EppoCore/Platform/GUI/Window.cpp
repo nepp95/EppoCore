@@ -8,15 +8,45 @@
 
 namespace Eppo
 {
-    namespace
+    static void GLFWErrorCallback(int error, const char* description)
     {
-        void GLFWErrorCallback(int error, const char* description)
+        EPPO_ERROR("GLFW Error: ({0}): {1}", error, description);
+    }
+
+    static void OpenGLMessageCallback(
+            unsigned source,
+            unsigned type,
+            unsigned id,
+            unsigned severity,
+            int length,
+            const char* message,
+            const void* userParam)
+    {
+        switch (severity)
         {
-            EPPO_ERROR("GLFW Error: ({0}): {1}", error, description);
+            case GL_DEBUG_SEVERITY_HIGH:
+            case GL_DEBUG_SEVERITY_MEDIUM:
+            {
+                EPPO_ERROR(message);
+                break;
+            }
+
+            case GL_DEBUG_SEVERITY_LOW:
+            {
+                EPPO_WARN(message);
+                break;
+            }
+
+            case GL_DEBUG_SEVERITY_NOTIFICATION:
+            {
+                EPPO_INFO(message);
+                break;
+            }
         }
     }
 
-    Window::Window(WindowSpecification specification) : m_Specification(std::move(specification))
+    Window::Window(WindowSpecification specification)
+        : m_Specification(std::move(specification))
     {
         EPPO_INFO("Creating window {0} ({1}x{2})", m_Specification.Title, m_Specification.Width, m_Specification.Height);
 
@@ -43,6 +73,23 @@ namespace Eppo
         EPPO_ASSERT(status)
         EPPO_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5),
                     "Application requires at least OpenGL version 4.5!")
+        EPPO_INFO("OpenGL Info:");
+        EPPO_INFO("\tVendor: {}", glGetString(GL_VENDOR));
+        EPPO_INFO("\tRenderer: {}", glGetString(GL_RENDERER));
+        EPPO_INFO("\tVersion: {}", glGetString(GL_VERSION));
+
+        // Enable debug output
+        #ifdef EPPO_DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, false);
+        #endif
+
+        // Setup OpenGL states
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH_TEST);
 
         // Setup event callbacks
         glfwSetWindowUserPointer(m_Window, &m_EventCallback);
@@ -83,5 +130,10 @@ namespace Eppo
     {
         EPPO_ASSERT(m_Window)
         glfwSwapBuffers(m_Window);
+    }
+
+    void Window::SetVSync(const bool state)
+    {
+        glfwSwapInterval(state ? 1 : 0);
     }
 }

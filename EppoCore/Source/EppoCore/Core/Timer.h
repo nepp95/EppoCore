@@ -2,27 +2,32 @@
 
 #include <chrono>
 
-namespace Eppo 
+namespace Eppo
 {
 	class Timer
 	{
 	public:
 		Timer()
 		{
-			m_startPoint = std::chrono::steady_clock::now();
+			m_startPoint = std::chrono::high_resolution_clock::now();
 		}
 
-		[[nodiscard]] uint64_t GetElapsedMilliseconds() const
+		void Reset()
 		{
-			return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - m_startPoint).count();
+			m_startPoint = std::chrono::high_resolution_clock::now();
 		}
 
-		[[nodiscard]] uint64_t GetElapsedMicroseconds() const
+		[[nodiscard]] float GetElapsedMilliseconds() const
 		{
-			return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - m_startPoint).count();
+			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_startPoint).count() * 0.001f * 0.001f * 0.001f;
+		}
+
+		[[nodiscard]] float GetElapsedMicroseconds() const
+		{
+			return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - m_startPoint).count() * 0.001f * 0.001f;
 		}
 
 	private:
-		std::chrono::steady_clock::time_point m_startPoint;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_startPoint;
 	};
 }

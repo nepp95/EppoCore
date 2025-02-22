@@ -29,6 +29,8 @@ namespace Eppo
         static void PollEvents();
         void SwapBuffers() const;
 
+        static void SetVSync(bool state);
+
         [[nodiscard]] uint32_t GetWidth() const { return m_Specification.Width; }
         [[nodiscard]] uint32_t GetHeight() const { return m_Specification.Height; }
 

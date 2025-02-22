@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EppoCore/Core/Layer.h"
+#include "EppoCore/Platform/GUI/Renderer.h"
 #include "EppoCore/Platform/GUI/Window.h"
 #include "EppoCore/Platform/GUI/Event/ApplicationEvent.h"
 #include "EppoCore/Platform/GUI/UI/ImGuiLayer.h"
@@ -48,6 +49,7 @@ namespace Eppo
 		void OnEvent(Event& e);
 
 		[[nodiscard]] const ApplicationSpecification& GetSpecification() const;
+		[[nodiscard]] std::shared_ptr<Renderer> GetRenderer() const;
 		[[nodiscard]] const Window& GetWindow() const;
 
 		static Application& Get();
@@ -65,6 +67,7 @@ namespace Eppo
 		ApplicationSpecification m_Specification;
 		std::unique_ptr<Window> m_Window;
 		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
+		std::shared_ptr<Renderer> m_Renderer;
 		std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
 		bool m_Running = true;
