@@ -1,8 +1,13 @@
-#include "pch.h"
 #include "Renderer.h"
 
+#include <freetype/freetype.h>
+#include <ft2build.h>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <ranges>
+
+#include "ApplicationGUI.h"
+#include "pch.h"
 
 namespace Eppo
 {
@@ -12,7 +17,13 @@ namespace Eppo
         m_UniformBuffer = std::make_unique<UniformBuffer>(sizeof(UboData), 0);
 
         // Compile shader
-        m_Shader = std::make_unique<Shader>();
+        const auto& spec = Application::Get().GetSpecification();
+
+        std::array paths = { spec.LocalWorkingDirectory / "Shaders" / "Quad.vert", spec.LocalWorkingDirectory / "Shaders" / "Quad.frag" };
+        m_QuadShader = std::make_unique<Shader>(paths);
+
+        paths = { spec.LocalWorkingDirectory / "Shaders" / "Text.vert", spec.LocalWorkingDirectory / "Shaders" / "Text.frag" };
+        m_TextShader = std::make_unique<Shader>(paths);
 
         // Setup index data
         const auto quadIndices = new uint32_t[MAX_INDICES];
@@ -31,47 +42,119 @@ namespace Eppo
         }
 
         // Setup OpenGL
-        // Create vertex buffer
-        glCreateBuffers(1, &m_VertexBufferID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
+        // Create quad vertex buffer
+        glCreateBuffers(1, &m_QuadVertexBufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_QuadVertexBufferID);
         glBufferData(GL_ARRAY_BUFFER, MAX_VERTICES * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
-        // Create index buffer
-        glCreateBuffers(1, &m_IndexBufferID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_IndexBufferID);
+        // Create quad index buffer
+        glCreateBuffers(1, &m_QuadIndexBufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_QuadIndexBufferID);
         glBufferData(GL_ARRAY_BUFFER, MAX_INDICES * sizeof(uint32_t), quadIndices, GL_STATIC_DRAW);
-        delete[] quadIndices;
 
-        // Create vertex array
-        glCreateVertexArrays(1, &m_VertexArrayID);
-        glBindVertexArray(m_VertexArrayID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
+        // Create quad vertex array
+        glCreateVertexArrays(1, &m_QuadVertexArrayID);
+        glBindVertexArray(m_QuadVertexArrayID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_QuadVertexBufferID);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_QuadIndexBufferID);
 
-        uint32_t index = 0;
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
 
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr);
-        index++;
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(sizeof(glm::vec2)));
 
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(sizeof(glm::vec2)));
+        // Font rendering
+        FT_Library ft;
+        EPPO_ASSERT(!FT_Init_FreeType(&ft), "Failed to initialize freetype!")
 
-        glBindVertexArray(m_VertexArrayID);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBufferID);
+        FT_Face face;
+        const std::filesystem::path fontPath = spec.LocalWorkingDirectory / "Fonts" / "Futuram.ttf";
+        EPPO_ASSERT(!FT_New_Face(ft, fontPath.string().c_str(), 0, &face), "Failed to load font!")
+
+        FT_Set_Pixel_Sizes(face, 0, 48);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        for (unsigned char c = 0; c < 128; c++)
+        {
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+            {
+                EPPO_ERROR("Failed to load character from font!");
+                continue;
+            }
+
+            uint32_t id;
+            glCreateTextures(GL_TEXTURE_2D, 1, &id);
+            glBindTexture(GL_TEXTURE_2D, id);
+            glTextureStorage2D(id, 1, GL_R8, face->glyph->bitmap.width, face->glyph->bitmap.rows);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTextureSubImage2D(id, 0, 0, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE,
+                                face->glyph->bitmap.buffer);
+
+            m_Characters[c] = Character(id, face->glyph->advance.x, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                                        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top));
+        }
+
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+
+        // Create text vertex buffer
+        glCreateBuffers(1, &m_TextVertexBufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_TextVertexBufferID);
+        glBufferData(GL_ARRAY_BUFFER, MAX_VERTICES * sizeof(TextVertex), nullptr, GL_DYNAMIC_DRAW);
+
+        // Create text index buffer
+        glCreateBuffers(1, &m_TextIndexBufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_TextIndexBufferID);
+        glBufferData(GL_ARRAY_BUFFER, MAX_INDICES * sizeof(uint32_t), quadIndices, GL_STATIC_DRAW);
+
+        // Create text vertex array
+        glCreateVertexArrays(1, &m_TextVertexArrayID);
+        glBindVertexArray(m_TextVertexArrayID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_TextVertexBufferID);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_TextIndexBufferID);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertex), nullptr);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertex), reinterpret_cast<const void*>(sizeof(glm::vec2)));
+
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(TextVertex),
+                              reinterpret_cast<const void*>(sizeof(glm::vec2) + sizeof(glm::vec2)));
 
         // Setup vertex data
-        m_VertexBufferBase = new Vertex[MAX_VERTICES * sizeof(Vertex)];
-        m_VertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-        m_VertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
-        m_VertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
-        m_VertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+        m_QuadVertexBufferBase = new Vertex[MAX_VERTICES * sizeof(Vertex)];
+        m_TextVertexBufferBase = new TextVertex[MAX_VERTICES * sizeof(TextVertex)];
+
+        m_QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+        m_QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+        m_QuadVertexPositions[2] = { 0.5f, 0.5f, 0.0f, 1.0f };
+        m_QuadVertexPositions[3] = { -0.5f, 0.5f, 0.0f, 1.0f };
+
+        delete[] quadIndices;
     }
 
     Renderer::~Renderer()
     {
-        glDeleteVertexArrays(1, &m_VertexArrayID);
-        glDeleteBuffers(1, &m_VertexBufferID);
-        glDeleteBuffers(1, &m_IndexBufferID);
+        delete[] m_QuadVertexBufferBase;
+        delete[] m_TextVertexBufferBase;
+
+        for (const auto& character : m_Characters | std::views::values)
+            glDeleteTextures(1, &character.RendererID);
+
+        glDeleteVertexArrays(1, &m_TextVertexArrayID);
+        glDeleteBuffers(1, &m_TextVertexBufferID);
+
+        glDeleteVertexArrays(1, &m_QuadVertexArrayID);
+        glDeleteBuffers(1, &m_QuadVertexBufferID);
+        glDeleteBuffers(1, &m_QuadIndexBufferID);
     }
 
     void Renderer::BeginScene(const glm::mat4& projection)
@@ -89,17 +172,73 @@ namespace Eppo
 
     void Renderer::DrawRectangle(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color)
     {
-        const glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position, 1.0f)) * glm::scale(
-                glm::mat4(1.0f), glm::vec3(size, 1.0f));
+        const glm::mat4 transform =
+                glm::translate(glm::mat4(1.0f), glm::vec3(position, 1.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(size, 1.0f));
 
-        for (const auto& vertexPosition : m_VertexPositions)
+        for (const auto& vertexPosition : m_QuadVertexPositions)
         {
-            m_VertexBufferPtr->Position = transform * vertexPosition;
-            m_VertexBufferPtr->Color = color;
-            m_VertexBufferPtr++;
+            m_QuadVertexBufferPtr->Position = transform * vertexPosition;
+            m_QuadVertexBufferPtr->Color = color;
+            m_QuadVertexBufferPtr++;
         }
 
-        m_IndexCount += 6;
+        m_QuadIndexCount += 6;
+    }
+
+    void Renderer::DrawString(const glm::vec2& position, const std::string& text, float fontSize)
+    {
+        constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+        float xOffset = 0.0f;
+
+        for (const auto& c : text)
+        {
+            const Character& ch = m_Characters[c];
+            const float xPos = position.x + ch.Bearing.x + xOffset;
+            const float yPos = position.y - ch.Bearing.y;
+            const float width = ch.Size.x;
+            const float height = ch.Size.y;
+
+            //const glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(xPos, yPos, 1.0f)) *
+            //glm::scale(glm::mat4(1.0f), glm::vec3(width, height, 1.0f));
+
+            const glm::vec2 vertices[4] = {
+                { xPos, yPos },
+                { xPos + width, yPos },
+                { xPos + width, yPos + height },
+                { xPos, yPos + height },
+            };
+
+            float texIndex = 0.0f;
+            for (uint32_t i = 0; i < m_TextureIndex; i++)
+            {
+                if (m_Textures[i] == ch.RendererID)
+                {
+                    texIndex = static_cast<float>(i);
+                    break;
+                }
+            }
+
+            if (texIndex == 0.0f)
+            {
+                if (m_TextureIndex >= MAX_TEXTURES)
+                    NextBatch();
+
+                texIndex = static_cast<float>(m_TextureIndex);
+                m_Textures[m_TextureIndex] = ch.RendererID;
+                m_TextureIndex++;
+            }
+
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                m_TextVertexBufferPtr->Position = vertices[i];
+                m_TextVertexBufferPtr->TexCoords = textureCoords[i];
+                m_TextVertexBufferPtr->TexIndex = texIndex;
+                m_TextVertexBufferPtr++;
+            }
+
+            m_TextIndexCount += 6;
+            xOffset += ch.Advance >> 6;
+        }
     }
 
     void Renderer::NextBatch()
@@ -110,24 +249,47 @@ namespace Eppo
 
     void Renderer::StartBatch()
     {
-        m_VertexBufferPtr = m_VertexBufferBase;
-        m_IndexCount = 0;
+        m_QuadVertexBufferPtr = m_QuadVertexBufferBase;
+        m_QuadIndexCount = 0;
+
+        m_TextVertexBufferPtr = m_TextVertexBufferBase;
+        m_TextIndexCount = 0;
+
+        m_TextureIndex = 0;
     }
 
     void Renderer::Flush() const
     {
-        if (m_IndexCount == 0)
-            return;
+        if (m_QuadIndexCount)
+        {
+            // Update vertex buffer
+            const auto dataSize = static_cast<uint32_t>(reinterpret_cast<uint8_t*>(m_QuadVertexBufferPtr) -
+                reinterpret_cast<uint8_t*>(m_QuadVertexBufferBase));
+            glBindBuffer(GL_ARRAY_BUFFER, m_QuadVertexBufferID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, dataSize, m_QuadVertexBufferBase);
 
-        // Update vertex buffer
-        const auto dataSize = static_cast<uint32_t>(reinterpret_cast<uint8_t*>(m_VertexBufferPtr) - reinterpret_cast<uint8_t*>(
-            m_VertexBufferBase));
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexBufferID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, dataSize, m_VertexBufferBase);
+            // Draw call
+            m_QuadShader->Bind();
+            glBindVertexArray(m_QuadVertexArrayID);
+            glDrawElements(GL_TRIANGLES, static_cast<int>(m_QuadIndexCount), GL_UNSIGNED_INT, nullptr);
+        }
 
-        // Draw call
-        m_Shader->Bind();
-        glBindVertexArray(m_VertexArrayID);
-        glDrawElements(GL_TRIANGLES, static_cast<int>(m_IndexCount), GL_UNSIGNED_INT, nullptr);
+        if (m_TextIndexCount)
+        {
+            // Update vertex buffer
+            const auto dataSize = static_cast<uint32_t>(reinterpret_cast<uint8_t*>(m_TextVertexBufferPtr) -
+                reinterpret_cast<uint8_t*>(m_TextVertexBufferBase));
+            glBindBuffer(GL_ARRAY_BUFFER, m_TextVertexBufferID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, dataSize, m_TextVertexBufferBase);
+
+            // Bind textures
+            for (uint32_t i = 0; i < m_TextureIndex; i++)
+                glBindTextureUnit(i, m_Textures[i]);
+
+            // Draw call
+            m_TextShader->Bind();
+            glBindVertexArray(m_TextVertexArrayID);
+            glDrawElements(GL_TRIANGLES, static_cast<int>(m_TextIndexCount), GL_UNSIGNED_INT, nullptr);
+        }
     }
 }

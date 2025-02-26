@@ -18,7 +18,7 @@ namespace Eppo
 		void Bind(uint32_t slot = 0) const;
 
 	private:
-		uint32_t m_RendererID;
+		uint32_t m_RendererID = 0;
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;
 

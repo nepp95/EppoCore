@@ -3,49 +3,20 @@
 
 #include <glad/glad.h>
 
+#include <utility>
+
 namespace Eppo
 {
-    Shader::Shader()
+    Shader::Shader(const std::array<std::filesystem::path, 2>& filepaths)
     {
-        const std::string vertexShaderSource = R"(
-            #version 450 core
-
-            layout (location = 0) in vec2 inPosition;
-            layout (location = 1) in vec4 inColor;
-
-            layout (location = 0) out vec4 outColor;
-
-            layout(std140, binding = 0) uniform Camera
-            {
-                mat4 u_ProjectionMatrix;
-            };
-
-            void main()
-            {
-                outColor = inColor;
-
-                vec3 position = vec3(inPosition, 1.0);
-                gl_Position = u_ProjectionMatrix * vec4(position, 1.0);
-            }
-        )";
-
-        const std::string fragmentShaderSource = R"(
-            #version 450 core
-
-            layout (location = 0) in vec4 inColor;
-
-            layout (location = 0) out vec4 outFragColor;
-
-            void main()
-            {
-                outFragColor = inColor;
-            }
-        )";
+        // Read shader source from file
+        const std::string vertexSource = ReadFile(filepaths[0]);
+        const std::string fragmentSource = ReadFile(filepaths[1]);
 
         // Compile shaders
         int success = 0;
 
-        const GLchar* vertexSrc = vertexShaderSource.c_str();
+        const GLchar* vertexSrc = vertexSource.c_str();
         const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexSrc, nullptr);
         glCompileShader(vertexShader);
@@ -61,7 +32,7 @@ namespace Eppo
             EPPO_ERROR("Shader compilation error: {}", infoLog.data());
         }
 
-        const GLchar* fragmentSrc = fragmentShaderSource.c_str();
+        const GLchar* fragmentSrc = fragmentSource.c_str();
         const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentShader, 1, &fragmentSrc, nullptr);
         glCompileShader(fragmentShader);
@@ -103,5 +74,37 @@ namespace Eppo
     uint32_t Shader::GetRendererID() const
     {
         return m_RendererID;
+    }
+
+    std::string Shader::ReadFile(const std::filesystem::path& filepath)
+    {
+        std::ifstream in(filepath, std::ios::in | std::ios::binary);
+        std::string result;
+
+        if (in)
+        {
+            // Get size of source
+            in.seekg(0, std::ios::end);
+            size_t size = in.tellg();
+
+            if (size != -1)
+            {
+                result.resize(in.tellg());
+                in.seekg(0, std::ios::beg);
+
+                // Read source
+                in.read(&result[0], result.size());
+            }
+            else
+            {
+                EPPO_ERROR("Failed to read shader file '{}'", filepath);
+            }
+        }
+        else
+        {
+            EPPO_ERROR("Failed to open shader file '{}'", filepath);
+        }
+
+        return result;
     }
 }

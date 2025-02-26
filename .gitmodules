@@ -10,3 +10,6 @@
 [submodule "EppoCore/Vendor/imgui"]
 	path = EppoCore/Vendor/imgui
 	url = https://github.com/nepp95/imgui
+[submodule "EppoCore/Vendor/freetype"]
+	path = EppoCore/Vendor/freetype
+	url = https://github.com/freetype/freetype.git

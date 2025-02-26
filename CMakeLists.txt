@@ -18,6 +18,7 @@ set(PCH_SOURCE "EppoCore/Source/pch.cpp")
 
 set(INCLUDE_DIRS_GUI
     "EppoCore/Source"
+    "EppoCore/Vendor/freetype/include"
     "EppoCore/Vendor/glad/include"
     "EppoCore/Vendor/glfw/include"
     "EppoCore/Vendor/glm"
@@ -60,11 +61,12 @@ else()
 endif()
 
 # Packages
+add_subdirectory("EppoCore/Vendor/freetype")
 add_subdirectory("EppoCore/Vendor/glad")
 add_subdirectory("EppoCore/Vendor/glfw")
 add_subdirectory("EppoCore/Vendor/imgui")
 
-target_link_libraries(EppoCore_GUI PUBLIC glad glfw imgui)
+target_link_libraries(EppoCore_GUI PUBLIC freetype glad glfw imgui)
 target_include_directories(EppoCore_GUI PUBLIC ${INCLUDE_DIRS_GUI})
 target_include_directories(EppoCore_Headless PUBLIC ${INCLUDE_DIRS_HEADLESS})
 target_precompile_headers(EppoCore_GUI PUBLIC ${PCH_HEADER})
