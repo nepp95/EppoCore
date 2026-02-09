@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <random>
+#include <ranges>
 #include <string>
 #include <sstream>
 #include <thread>

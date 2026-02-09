@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef EPPO_GUI
+#ifdef EP_GUI
     #include "EppoCore/Platform/GUI/Event/Event.h"
 #endif
 
@@ -11,13 +11,13 @@ namespace Eppo
     public:
         virtual ~Layer() = default;
 
-        virtual void OnAttach() {}
-        virtual void OnDetach() {}
+        virtual auto OnAttach() -> void {}
+        virtual auto OnDetach() -> void {}
 
-        virtual void OnUpdate(float timestep) {}
-        #ifdef EPPO_GUI
-        virtual void OnEvent(Event& e) {}
-        #endif
-        virtual void OnUIRender() {}
+        virtual auto OnUpdate(float timestep) -> void {}
+#ifdef EP_GUI
+        virtual auto OnEvent(Event& e) -> void {}
+#endif
+        virtual auto OnUIRender() -> void {}
     };
 }

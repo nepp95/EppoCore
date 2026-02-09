@@ -13,16 +13,17 @@ namespace Eppo
         glCreateTextures(GL_TEXTURE_2D, 1, &m_TextureID);
         glBindTexture(GL_TEXTURE_2D, m_TextureID);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<int>(m_Specification.Width), static_cast<int>(m_Specification.Height), 0,
-                     GL_RGBA,
-                     GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D(
+            GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<int>(m_Specification.Width), static_cast<int>(m_Specification.Height), 0, GL_RGBA,
+            GL_UNSIGNED_BYTE, nullptr
+        );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0);
         glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-        EPPO_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+        EP_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

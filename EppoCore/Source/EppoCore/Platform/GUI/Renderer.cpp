@@ -1,10 +1,7 @@
 #include "Renderer.h"
 
-#include <freetype/freetype.h>
-#include <ft2build.h>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
-#include <ranges>
 
 #include "ApplicationGUI.h"
 #include "pch.h"
@@ -63,45 +60,6 @@ namespace Eppo
 
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<const void*>(sizeof(glm::vec2)));
-
-        // Font rendering
-        FT_Library ft;
-        EPPO_ASSERT(!FT_Init_FreeType(&ft), "Failed to initialize freetype!")
-
-        FT_Face face;
-        const std::filesystem::path fontPath = spec.LocalWorkingDirectory / "Fonts" / "Futuram.ttf";
-        EPPO_ASSERT(!FT_New_Face(ft, fontPath.string().c_str(), 0, &face), "Failed to load font!")
-
-        FT_Set_Pixel_Sizes(face, 0, 48);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        for (unsigned char c = 0; c < 128; c++)
-        {
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-            {
-                EPPO_ERROR("Failed to load character from font!");
-                continue;
-            }
-
-            uint32_t id;
-            glCreateTextures(GL_TEXTURE_2D, 1, &id);
-            glBindTexture(GL_TEXTURE_2D, id);
-            glTextureStorage2D(id, 1, GL_R8, face->glyph->bitmap.width, face->glyph->bitmap.rows);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            glTextureSubImage2D(id, 0, 0, 0, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE,
-                                face->glyph->bitmap.buffer);
-
-            m_Characters[c] = Character(id, face->glyph->advance.x, glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                                        glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top));
-        }
-
-        FT_Done_Face(face);
-        FT_Done_FreeType(ft);
 
         // Create text vertex buffer
         glCreateBuffers(1, &m_TextVertexBufferID);

@@ -29,7 +29,7 @@ namespace Eppo
             std::vector<char> infoLog(maxLength);
             glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
 
-            EPPO_ERROR("Shader compilation error: {}", infoLog.data());
+            Log::Error("Shader compilation error: {}", infoLog.data());
         }
 
         const GLchar* fragmentSrc = fragmentSource.c_str();
@@ -45,7 +45,7 @@ namespace Eppo
             std::vector<char> infoLog(maxLength);
             glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &infoLog[0]);
 
-            EPPO_ERROR("Shader compilation error: {}", infoLog.data());
+            Log::Error("Shader compilation error: {}", infoLog.data());
         }
 
         // Create shader program
@@ -54,7 +54,7 @@ namespace Eppo
         glAttachShader(m_RendererID, fragmentShader);
         glLinkProgram(m_RendererID);
         glGetProgramiv(m_RendererID, GL_LINK_STATUS, &success);
-        EPPO_ASSERT(success)
+        EP_ASSERT(success);
 
         // Cleanup
         glDeleteShader(vertexShader);
@@ -97,12 +97,12 @@ namespace Eppo
             }
             else
             {
-                EPPO_ERROR("Failed to read shader file '{}'", filepath);
+                Log::Error("Failed to read shader file '{}'", filepath);
             }
         }
         else
         {
-            EPPO_ERROR("Failed to open shader file '{}'", filepath);
+            Log::Error("Failed to open shader file '{}'", filepath);
         }
 
         return result;

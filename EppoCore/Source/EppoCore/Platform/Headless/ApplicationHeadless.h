@@ -4,42 +4,41 @@
 #include "EppoCore/Core/Layer.h"
 #include "EppoCore/Core/Timer.h"
 
-int main(int argc, char** argv);
+auto main(int argc, char** argv) -> int;
 
 namespace Eppo
 {
-	class Application
-	{
-	public:
-		explicit Application(ApplicationSpecification specification);
+    class Application
+    {
+    public:
+        explicit Application(ApplicationSpecification specification);
+        ~Application();
 
-		~Application();
+        auto Close() -> void;
 
-		void Close();
+        [[nodiscard]] constexpr auto GetSpecification() const -> const ApplicationSpecification& { return m_Specification; }
 
-		[[nodiscard]] const ApplicationSpecification& GetSpecification() const;
+        static auto Get() -> Application&;
 
-		static Application& Get();
+    protected:
+        auto PushLayer(const std::shared_ptr<Layer>& layer) -> void;
 
-	protected:
-		void PushLayer(const std::shared_ptr<Layer>& layer);
+    private:
+        auto Run() -> void;
 
-	private:
-		void Run();
+    private:
+        ApplicationSpecification m_Specification;
+        std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
-	private:
-		ApplicationSpecification m_Specification;
-		std::vector<std::shared_ptr<Layer>> m_LayerStack;
+        bool m_Running = true;
+        float m_LastFrameTime = 0.0f;
+        Timer m_Timer;
 
-		bool m_Running = true;
-		float m_LastFrameTime = 0.0f;
-		Timer m_Timer;
+        static Application* s_Instance;
 
-		static Application* s_Instance;
+        friend auto ::main(int argc, char** argv) -> int;
+    };
 
-		friend int ::main(int argc, char** argv);
-	};
-
-	// To be implemented by the client using this library
-	Application* CreateApplication(ApplicationCommandLineArgs args);
+    // To be implemented by the client using this library
+    auto CreateApplication(ApplicationCommandLineArgs args) -> Application*;
 }

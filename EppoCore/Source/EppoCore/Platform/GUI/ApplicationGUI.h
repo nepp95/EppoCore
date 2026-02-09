@@ -11,45 +11,45 @@ int main(int argc, char** argv);
 
 namespace Eppo
 {
-	class Application
-	{
-	public:
-		explicit Application(ApplicationSpecification specification);
-		~Application();
+    class Application
+    {
+    public:
+        explicit Application(ApplicationSpecification specification);
+        ~Application();
 
-		void Close();
-		void OnEvent(Event& e);
+        auto Close() -> void;
+        auto OnEvent(Event& e) -> void;
 
-		[[nodiscard]] const ApplicationSpecification& GetSpecification() const;
-		[[nodiscard]] std::shared_ptr<Renderer> GetRenderer() const;
-		[[nodiscard]] const Window& GetWindow() const;
+        [[nodiscard]] constexpr auto GetSpecification() const -> const ApplicationSpecification& { return m_Specification; }
+        [[nodiscard]] auto GetRenderer() const -> std::shared_ptr<Renderer>;
+        [[nodiscard]] auto GetWindow() const -> const Window&;
 
-		static Application& Get();
+        static auto Get() -> Application&;
 
-	protected:
-		void PushLayer(const std::shared_ptr<Layer>& layer);
+    protected:
+        auto PushLayer(const std::shared_ptr<Layer>& layer) -> void;
 
-		bool OnWindowClose(const WindowCloseEvent& e);
-		bool OnWindowResize(const WindowResizeEvent& e);
+        auto OnWindowClose(const WindowCloseEvent& e) -> bool;
+        auto OnWindowResize(const WindowResizeEvent& e) -> bool;
 
-	private:
-		void Run();
+    private:
+        auto Run() -> void;
 
-	private:
-		ApplicationSpecification m_Specification;
-		std::unique_ptr<Window> m_Window;
-		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
-		std::shared_ptr<Renderer> m_Renderer;
-		std::vector<std::shared_ptr<Layer>> m_LayerStack;
+    private:
+        ApplicationSpecification m_Specification;
+        std::unique_ptr<Window> m_Window;
+        std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
+        std::shared_ptr<Renderer> m_Renderer;
+        std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
-		bool m_Running = true;
-		bool m_IsMinimized = false;
-		float m_LastFrameTime = 0.0f;
+        bool m_Running = true;
+        bool m_IsMinimized = false;
+        float m_LastFrameTime = 0.0f;
 
-		static Application* s_Instance;
-		friend int ::main(int argc, char** argv);
-	};
+        static Application* s_Instance;
+        friend int ::main(int argc, char** argv);
+    };
 
-	// To be implemented by the client using this library
-	Application* CreateApplication(ApplicationCommandLineArgs args);
+    // To be implemented by the client using this library
+    Application* CreateApplication(ApplicationCommandLineArgs args);
 }

@@ -5,45 +5,49 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
-#pragma warning(push, 0)
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
-#pragma warning(pop)
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace Eppo
 {
-	class Log
-	{
-	public:
-		static void Init();
+    class Log
+    {
+    public:
+        static auto Init() -> void;
 
-		static std::shared_ptr<spdlog::logger>& GetLogger() { return s_Logger; }
+        template<typename... Args>
+        static constexpr auto Trace(fmt::format_string<Args...> fmt, Args&&... args) -> void
+        {
+            s_Logger->trace(fmt, std::forward<Args>(args)...);
+        }
 
-	private:
-		static std::shared_ptr<spdlog::logger> s_Logger;
-	};
+        template<typename... Args>
+        static constexpr auto Info(fmt::format_string<Args...> fmt, Args&&... args) -> void
+        {
+            s_Logger->info(fmt, std::forward<Args>(args)...);
+        }
+        template<typename... Args>
+        static constexpr auto Warn(fmt::format_string<Args...> fmt, Args&&... args) -> void
+        {
+            s_Logger->warn(fmt, std::forward<Args>(args)...);
+        }
+
+        template<typename... Args>
+        static constexpr auto Error(fmt::format_string<Args...> fmt, Args&&... args) -> void
+        {
+            s_Logger->error(fmt, std::forward<Args>(args)...);
+        }
+
+    private:
+        static std::shared_ptr<spdlog::logger> s_Logger;
+    };
 }
 
-template<typename OStream, glm::length_t L, typename T, glm::qualifier Q>
-inline OStream& operator<<(OStream& os, const glm::vec<L, T, Q>& vector)
+template<>
+struct fmt::formatter<std::filesystem::path> : formatter<std::string_view>
 {
-	return os << glm::to_string(vector);
-}
-
-template<typename OStream, glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-inline OStream& operator<<(OStream& os, const glm::mat<C, R, T, Q>& matrix)
-{
-	return os << glm::to_string(matrix);
-}
-
-template<typename OStream, typename T, glm::qualifier Q>
-inline OStream& operator<<(OStream& os, glm::qua<T, Q> quaternio)
-{
-	return os << glm::to_string(quaternio);
-}
-
-#define EPPO_TRACE(...)			::Eppo::Log::GetLogger()->trace(__VA_ARGS__)
-#define EPPO_INFO(...)			::Eppo::Log::GetLogger()->info(__VA_ARGS__)
-#define EPPO_WARN(...)			::Eppo::Log::GetLogger()->warn(__VA_ARGS__)
-#define EPPO_ERROR(...)			::Eppo::Log::GetLogger()->error(__VA_ARGS__)
-#define EPPO_CRITICAL(...)		::Eppo::Log::GetLogger()->critical(__VA_ARGS__)
+    auto format(const std::filesystem::path& v, format_context& ctx) const -> format_context::iterator
+    {
+        return formatter<std::string_view>::format(v.string(), ctx);
+    }
+};

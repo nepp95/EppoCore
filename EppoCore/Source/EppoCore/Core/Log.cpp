@@ -1,17 +1,17 @@
 #include "pch.h"
 #include "Log.h"
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-
 namespace Eppo
 {
-	std::shared_ptr<spdlog::logger> Log::s_Logger;
+    std::shared_ptr<spdlog::logger> Log::s_Logger = nullptr;
 
-	void Log::Init()
-	{
-		spdlog::set_pattern("%^[%T][%l]: %v%$");
+    void Log::Init()
+    {
+        spdlog::set_pattern("%^[%T][%l]: %v%$");
 
-		s_Logger = spdlog::stdout_color_mt("EppoCore");
-		s_Logger->set_level(spdlog::level::trace);
-	}
+        s_Logger = spdlog::stdout_color_mt("EppoCore");
+        s_Logger->set_level(spdlog::level::trace);
+
+        spdlog::set_default_logger(s_Logger);
+    }
 }

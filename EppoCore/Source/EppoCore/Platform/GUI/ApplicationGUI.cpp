@@ -9,18 +9,21 @@ namespace Eppo
 {
     Application* Application::s_Instance = nullptr;
 
-    Application::Application(ApplicationSpecification specification) : m_Specification(std::move(specification))
+    Application::Application(ApplicationSpecification specification)
+        : m_Specification(std::move(specification))
     {
-        EPPO_ASSERT(!s_Instance, "Application already exists!");
+        EP_ASSERT(!s_Instance);
         s_Instance = this;
 
         // Create window
         WindowSpecification spec(m_Specification.Title, m_Specification.Width, m_Specification.Height);
         m_Window = std::make_unique<Window>(spec);
-        m_Window->SetEventCallbackFn([this](Event& e)
-        {
-            OnEvent(e);
-        });
+        m_Window->SetEventCallbackFn(
+            [this](Event& e)
+            {
+                OnEvent(e);
+            }
+        );
 
         // Initialize renderer
         m_Renderer = std::make_shared<Renderer>();
@@ -55,40 +58,35 @@ namespace Eppo
         }
     }
 
-    const ApplicationSpecification& Application::GetSpecification() const
-    {
-        return m_Specification;
-    }
-
-    std::shared_ptr<Renderer> Application::GetRenderer() const
+    auto Application::GetRenderer() const -> std::shared_ptr<Renderer>
     {
         return m_Renderer;
     }
 
-    const Window& Application::GetWindow() const
+    auto Application::GetWindow() const -> const Window&
     {
         return *m_Window;
     }
 
-    Application& Application::Get()
+    auto Application::Get() -> Application&
     {
         return *s_Instance;
     }
 
-    void Application::PushLayer(const std::shared_ptr<Layer>& layer)
+    auto Application::PushLayer(const std::shared_ptr<Layer>& layer) -> void
     {
         m_LayerStack.emplace_back(layer);
         layer->OnAttach();
     }
 
-    bool Application::OnWindowClose(const WindowCloseEvent& e)
+    auto Application::OnWindowClose(const WindowCloseEvent& e) -> bool
     {
         Close();
 
         return true;
     }
 
-    bool Application::OnWindowResize(const WindowResizeEvent& e)
+    auto Application::OnWindowResize(const WindowResizeEvent& e) -> bool
     {
         if (e.GetWidth() == 0 || e.GetHeight() == 0)
         {
@@ -102,7 +100,7 @@ namespace Eppo
         return true;
     }
 
-    void Application::Run()
+    auto Application::Run() -> void
     {
         while (m_Running)
         {

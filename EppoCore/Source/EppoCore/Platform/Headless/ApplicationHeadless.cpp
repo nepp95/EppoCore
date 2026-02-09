@@ -3,52 +3,47 @@
 
 namespace Eppo
 {
-	Application* Application::s_Instance = nullptr;
+    Application* Application::s_Instance = nullptr;
 
-	Application::Application(ApplicationSpecification specification)
-		: m_Specification(std::move(specification))
-	{
-		EPPO_ASSERT(!s_Instance, "Application already exists!");
-		s_Instance = this;
-	}
+    Application::Application(ApplicationSpecification specification)
+        : m_Specification(std::move(specification))
+    {
+        EP_ASSERT(!s_Instance);
+        s_Instance = this;
+    }
 
-	Application::~Application()
-	{
-		s_Instance = nullptr;
-	}
+    Application::~Application()
+    {
+        s_Instance = nullptr;
+    }
 
-	void Application::Close()
-	{
-		m_Running = false;
-	}
+    auto Application::Close() -> void
+    {
+        m_Running = false;
+    }
 
-	const ApplicationSpecification& Application::GetSpecification() const
-	{
-		return m_Specification;
-	}
+    auto Application::Get() -> Application&
+    {
+        return *s_Instance;
+    }
 
-	Application& Application::Get()
-	{
-		return *s_Instance;
-	}
+    auto Application::PushLayer(const std::shared_ptr<Layer>& layer) -> void
+    {
+        m_LayerStack.emplace_back(layer);
+        layer->OnAttach();
+    }
 
-	void Application::PushLayer(const std::shared_ptr<Layer>& layer)
-	{
-		m_LayerStack.emplace_back(layer);
-		layer->OnAttach();
-	}
+    auto Application::Run() -> void
+    {
+        while (m_Running)
+        {
+            const auto time = m_Timer.GetElapsedMilliseconds();
+            const float ts = time - m_LastFrameTime;
+            m_LastFrameTime = time;
 
-	void Application::Run()
-	{
-		while (m_Running)
-		{
-			const float time = static_cast<float>(m_Timer.GetElapsedMilliseconds());
-			const float ts = time - m_LastFrameTime;
-			m_LastFrameTime = time;
-
-			// Update layers
-			for (const auto& layer : m_LayerStack)
-				layer->OnUpdate(ts);
-		}
-	}
+            // Update layers
+            for (const auto& layer : m_LayerStack)
+                layer->OnUpdate(ts);
+        }
+    }
 }

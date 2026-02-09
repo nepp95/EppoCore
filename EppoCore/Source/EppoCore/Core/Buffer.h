@@ -7,11 +7,11 @@ namespace Eppo
 	struct Buffer
     {
         uint8_t* Data = nullptr;
-        uint32_t Size = 0;
+        uint64_t Size = 0;
 
         Buffer() = default;
 
-        Buffer(const uint32_t size)
+        Buffer(const uint64_t size)
         {
             Allocate(size);
         }
@@ -23,21 +23,21 @@ namespace Eppo
             return result;
         }
 
-        static Buffer Copy(const uint8_t* data, const uint32_t size)
+        static Buffer Copy(const uint8_t* data, const uint64_t size)
         {
             const Buffer result(size);
             memcpy(result.Data, data, size);
             return result;
         }
 
-        static Buffer Copy(const void* data, const uint32_t size)
+        static Buffer Copy(const void* data, const uint64_t size)
         {
             const Buffer result(size);
             memcpy(result.Data, data, size);
             return result;
         }
 
-        void Allocate(const uint32_t size)
+        void Allocate(const uint64_t size)
         {
             Release();
 
@@ -55,7 +55,7 @@ namespace Eppo
         template<typename T>
         T* As()
         {
-            return (T*)Data;
+            return static_cast<T*>(Data);
         }
 
         explicit operator bool() const
@@ -73,7 +73,7 @@ namespace Eppo
             : m_Buffer(buffer)
         {}
 
-        ScopedBuffer(const uint32_t size)
+        ScopedBuffer(const uint64_t size)
             : m_Buffer(size)
         {}
 
@@ -87,7 +87,7 @@ namespace Eppo
             return m_Buffer.Data;
         }
 
-        [[nodiscard]] uint32_t Size() const
+        [[nodiscard]] uint64_t Size() const
         {
             return m_Buffer.Size;
         }
