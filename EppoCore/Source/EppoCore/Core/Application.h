@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef EPPO_HEADLESS
+#ifdef EP_HEADLESS
 	#include "EppoCore/Platform/Headless/ApplicationHeadless.h"
 #else
 	#include "EppoCore/Platform/GUI/ApplicationGUI.h"

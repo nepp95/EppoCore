@@ -15,7 +15,7 @@ namespace Eppo
 		template<typename T>
 		T Read()
 		{
-			EPPO_ASSERT(m_Buffer.Size >= m_Offset + sizeof(T))
+			EP_ASSERT(m_Buffer.Size >= m_Offset + sizeof(T))
 			m_Offset += sizeof(T);
 			return static_cast<T>(m_Buffer.Data + m_Offset);
 		}

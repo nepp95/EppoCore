@@ -71,7 +71,7 @@ namespace Eppo
         EP_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5));
 
 // Enable debug output
-#ifdef EPPO_DEBUG
+#ifdef EP_DEBUG
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(OpenGLMessageCallback, nullptr);
