@@ -115,12 +115,18 @@ namespace Eppo
                 layer->OnUpdate(ts);
 
             // Update UI
+            for (const auto& layer : m_LayerStack)
+                layer->PreUIRender();
+
             m_ImGuiLayer->Begin();
 
             for (const auto& layer : m_LayerStack)
                 layer->OnUIRender();
 
             m_ImGuiLayer->End();
+
+            for (const auto& layer : m_LayerStack)
+                layer->PostUIRender();
 
             m_Window->SwapBuffers();
         }
