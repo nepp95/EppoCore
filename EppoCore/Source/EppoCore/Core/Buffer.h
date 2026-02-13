@@ -1,43 +1,17 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 namespace Eppo
 {
-	struct Buffer
+    struct Buffer
     {
         uint8_t* Data = nullptr;
         uint64_t Size = 0;
 
         Buffer() = default;
 
-        Buffer(const uint64_t size)
-        {
-            Allocate(size);
-        }
+        explicit Buffer(const uint64_t size) { Allocate(size); }
 
-        static Buffer Copy(const Buffer other)
-        {
-            const Buffer result(other.Size);
-            memcpy(result.Data, other.Data, other.Size);
-            return result;
-        }
-
-        static Buffer Copy(const uint8_t* data, const uint64_t size)
-        {
-            const Buffer result(size);
-            memcpy(result.Data, data, size);
-            return result;
-        }
-
-        static Buffer Copy(const void* data, const uint64_t size)
-        {
-            const Buffer result(size);
-            memcpy(result.Data, data, size);
-            return result;
-        }
-
-        void Allocate(const uint64_t size)
+        auto Allocate(const uint64_t size) -> void
         {
             Release();
 
@@ -45,55 +19,77 @@ namespace Eppo
             Size = size;
         }
 
-        void Release()
+        auto Release() -> void
         {
             delete[] Data;
             Data = nullptr;
             Size = 0;
         }
 
-        template<typename T>
-        T* As()
+        static auto Copy(const Buffer other) -> Buffer
         {
-            return static_cast<T*>(Data);
+            const Buffer result(other.Size);
+            std::memcpy(result.Data, other.Data, other.Size);
+            return result;
         }
 
-        explicit operator bool() const
+        static auto Copy(const uint8_t* data, const uint64_t size) -> Buffer
         {
-            return static_cast<bool>(Data);
+            const Buffer result(size);
+            std::memcpy(result.Data, data, size);
+            return result;
         }
+
+        static auto Copy(const void* data, const uint64_t size) -> Buffer
+        {
+            const Buffer result(size);
+            std::memcpy(result.Data, data, size);
+            return result;
+        }
+
+        template<typename T>
+        auto As() -> T*
+        {
+            return reinterpret_cast<T*>(Data);
+        }
+
+        template<typename T>
+        auto As() const -> const T*
+        {
+            return reinterpret_cast<const T*>(Data);
+        }
+
+        explicit operator bool() const { return static_cast<bool>(Data); }
     };
 
-	class ScopedBuffer
+    class ScopedBuffer
     {
     public:
         ScopedBuffer() = default;
 
         explicit ScopedBuffer(const Buffer buffer)
             : m_Buffer(buffer)
-        {}
+        {
+        }
 
-        ScopedBuffer(const uint64_t size)
+        explicit ScopedBuffer(const uint64_t size)
             : m_Buffer(size)
-        {}
-
-        ~ScopedBuffer()
         {
-            m_Buffer.Release();
         }
 
-        [[nodiscard]] uint8_t* Data() const
-        {
-            return m_Buffer.Data;
-        }
+        ~ScopedBuffer() { m_Buffer.Release(); }
 
-        [[nodiscard]] uint64_t Size() const
+        [[nodiscard]] auto Data() const -> uint8_t* { return m_Buffer.Data; }
+        [[nodiscard]] auto Size() const -> uint64_t { return m_Buffer.Size; }
+
+        template<typename T>
+        auto As() -> T*
         {
-            return m_Buffer.Size;
+            return m_Buffer.As<T>();
         }
 
         template<typename T>
-        T* As()
+        auto As() const -> const T*
         {
             return m_Buffer.As<T>();
         }
