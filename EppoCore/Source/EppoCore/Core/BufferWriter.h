@@ -14,14 +14,14 @@ namespace Eppo
 
 		void Write(Buffer srcBuffer)
 		{
-			EP_ASSERT(m_Buffer.Size >= srcBuffer.Size + m_Offset)
+			EP_ASSERT(m_Buffer.Size >= srcBuffer.Size + m_Offset);
 			memcpy(m_Buffer.Data, srcBuffer.Data, srcBuffer.Size);
 			m_Offset += srcBuffer.Size;
 		}
 		
 		void Write(void* data, uint32_t dataSize)
 		{
-			EP_ASSERT(m_Buffer.Size >= m_Offset + dataSize)
+			EP_ASSERT(m_Buffer.Size >= m_Offset + dataSize);
 			memcpy(m_Buffer.Data, data, dataSize);
 			m_Offset += dataSize;
 		}
