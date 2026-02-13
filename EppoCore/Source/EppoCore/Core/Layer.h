@@ -17,7 +17,9 @@ namespace Eppo
         virtual auto OnUpdate(float timestep) -> void {}
 #ifdef EP_GUI
         virtual auto OnEvent(Event& e) -> void {}
-#endif
+        virtual auto PreUIRender() -> void {}
         virtual auto OnUIRender() -> void {}
+        virtual auto PostUIRender() -> void {}
+#endif
     };
 }
