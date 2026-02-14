@@ -21,7 +21,7 @@ namespace Eppo
         }
 
         template<typename Key, typename Value>
-            requires(std::is_trivial<Key>())
+            requires(std::is_trivial_v<Key>())
         auto ReadMap(std::map<Key, Value>& map) -> void
         {
             // Read map size
@@ -38,7 +38,7 @@ namespace Eppo
         }
 
         template<typename Key, typename Value>
-            requires(std::is_trivial<Key>())
+            requires(std::is_trivial_v<Key>())
         auto ReadMap(std::unordered_map<Key, Value>& map) -> void
         {
             // Read map size
