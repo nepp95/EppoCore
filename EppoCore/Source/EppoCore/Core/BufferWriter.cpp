@@ -4,6 +4,7 @@
 namespace Eppo
 {
     BufferWriter::BufferWriter(const uint64_t size)
+        : m_OwningBuffer(true)
     {
         m_Buffer = Buffer(size);
     }
@@ -11,6 +12,12 @@ namespace Eppo
     BufferWriter::BufferWriter(const Buffer buffer, const uint64_t position)
         : m_Buffer(buffer), m_BufferPosition(position)
     {
+    }
+
+    BufferWriter::~BufferWriter()
+    {
+        if (m_OwningBuffer)
+            m_Buffer.Release();
     }
 
     auto BufferWriter::WriteData(const char* data, const size_t size) -> bool

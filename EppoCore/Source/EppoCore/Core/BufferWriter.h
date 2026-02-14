@@ -9,6 +9,7 @@ namespace Eppo
     public:
         explicit BufferWriter(uint64_t size = 1024);
         explicit BufferWriter(Buffer buffer, uint64_t position = 0);
+        ~BufferWriter();
 
         auto WriteData(const char* data, const size_t size) -> bool;
 
@@ -25,5 +26,6 @@ namespace Eppo
     private:
         Buffer m_Buffer;
         uint64_t m_BufferPosition = 0;
+        bool m_OwningBuffer = false;
     };
 }
