@@ -10,6 +10,10 @@ namespace Eppo
         Buffer() = default;
 
         explicit Buffer(const uint64_t size) { Allocate(size); }
+        explicit Buffer(const Buffer& other, const uint64_t size)
+            : Data(other.Data), Size(size)
+        {
+        }
 
         auto Allocate(const uint64_t size) -> void
         {
