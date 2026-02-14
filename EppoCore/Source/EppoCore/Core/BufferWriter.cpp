@@ -33,14 +33,6 @@ namespace Eppo
         return true;
     }
 
-    template<typename T>
-    auto BufferWriter::WriteRaw(const T& value) -> bool
-    {
-        const bool success = WriteData(reinterpret_cast<const char*>(&value), sizeof(T));
-        EP_ASSERT(success);
-        return success;
-    }
-
     auto BufferWriter::WriteZero(const uint64_t size) -> void
     {
         constexpr char zero = 0;

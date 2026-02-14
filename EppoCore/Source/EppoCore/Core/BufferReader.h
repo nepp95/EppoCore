@@ -9,15 +9,20 @@ namespace Eppo
     public:
         explicit BufferReader(Buffer buffer, uint64_t position = 0);
 
-        auto ReadData(char* outData, const size_t size) -> bool;
+        auto ReadData(char* outData, size_t size) -> bool;
 
         template<typename T>
-        auto ReadRaw(T& value) -> bool;
+        auto ReadRaw(T& value) -> bool
+        {
+            const bool success = ReadData(reinterpret_cast<char*>(&value), sizeof(T));
+            EP_ASSERT(success);
+            return success;
+        }
 
         auto ReadString(std::string& str) -> bool;
 
-        auto GetStreamPosition() const { return m_BufferPosition; }
-        auto GetBuffer() const { return Buffer(m_Buffer, m_BufferPosition); }
+        [[nodiscard]] auto GetStreamPosition() const { return m_BufferPosition; }
+        [[nodiscard]] auto GetBuffer() const { return Buffer(m_Buffer, m_BufferPosition); }
 
     private:
         Buffer m_Buffer;

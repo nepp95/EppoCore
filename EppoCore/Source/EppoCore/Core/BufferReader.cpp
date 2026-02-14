@@ -21,14 +21,6 @@ namespace Eppo
         return true;
     }
 
-    template<typename T>
-    auto BufferReader::ReadRaw(T& value) -> bool
-    {
-        const bool success = ReadData(reinterpret_cast<char*>(&value), sizeof(T));
-        EP_ASSERT(success);
-        return success;
-    }
-
     auto BufferReader::ReadString(std::string& str) -> bool
     {
         uint64_t size = 0;
