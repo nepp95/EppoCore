@@ -3,6 +3,11 @@
 
 namespace Eppo
 {
+    BufferWriter::BufferWriter(const uint64_t size)
+    {
+        m_Buffer = Buffer(size);
+    }
+
     BufferWriter::BufferWriter(const Buffer buffer, const uint64_t position)
         : m_Buffer(buffer), m_BufferPosition(position)
     {
