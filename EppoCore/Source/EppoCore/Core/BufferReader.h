@@ -10,6 +10,7 @@ namespace Eppo
         explicit BufferReader(Buffer buffer, uint64_t position = 0);
 
         auto ReadData(char* outData, size_t size) -> bool;
+        auto ReadString(std::string& str) -> bool;
 
         template<typename T>
         auto ReadRaw(T& value) -> bool
@@ -19,7 +20,55 @@ namespace Eppo
             return success;
         }
 
-        auto ReadString(std::string& str) -> bool;
+        template<typename Key, typename Value>
+            requires(std::is_trivial<Key>())
+        auto ReadMap(std::map<Key, Value>& map) -> void
+        {
+            // Read map size
+            uint32_t size;
+            ReadRaw<uint32_t>(size);
+
+            // Read key/values
+            for (uint32_t i = 0; i < size; i++)
+            {
+                Key key;
+                ReadRaw<Key>(key);
+                ReadRaw<Value>(map[key]);
+            }
+        }
+
+        template<typename Key, typename Value>
+            requires(std::is_trivial<Key>())
+        auto ReadMap(std::unordered_map<Key, Value>& map) -> void
+        {
+            // Read map size
+            uint32_t size;
+            ReadRaw<uint32_t>(size);
+
+            // Read key/values
+            for (uint32_t i = 0; i < size; i++)
+            {
+                Key key;
+                ReadRaw<Key>(key);
+                ReadRaw<Value>(map[key]);
+            }
+        }
+
+        template<typename Value>
+        auto ReadMap(std::unordered_map<std::string, Value>& map) -> void
+        {
+            // Read map size
+            uint32_t size;
+            ReadRaw<uint32_t>(size);
+
+            // Read key/values
+            for (uint32_t i = 0; i < size; i++)
+            {
+                std::string key;
+                ReadString(key);
+                ReadRaw<Value>(map[key]);
+            }
+        }
 
         [[nodiscard]] auto GetStreamPosition() const { return m_BufferPosition; }
         [[nodiscard]] auto GetBuffer() const { return Buffer(m_Buffer, m_BufferPosition); }
