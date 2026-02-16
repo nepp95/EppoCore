@@ -23,7 +23,7 @@ namespace Eppo
             EP_ASSERT(success);
             return success;
         }
-        
+
         template<typename T>
         auto WriteObject(const T& value) -> bool
         {
@@ -33,7 +33,6 @@ namespace Eppo
         }
 
         template<typename Key, typename Value>
-            requires(std::is_trivial_v<Key>())
         auto WriteMap(const std::map<Key, Value>& map) -> void
         {
             // Write map size
@@ -55,7 +54,6 @@ namespace Eppo
         }
 
         template<typename Key, typename Value>
-            requires(std::is_trivial_v<Key>())
         auto WriteMap(const std::unordered_map<Key, Value>& map) -> void
         {
             // Write map size
