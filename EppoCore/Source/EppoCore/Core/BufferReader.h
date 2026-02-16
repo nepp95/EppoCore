@@ -20,6 +20,14 @@ namespace Eppo
             return success;
         }
 
+        template<typename T>
+        auto ReadObject(T& value) -> bool
+        {
+            const bool success = T::Deserialize(this, value);
+            EP_ASSERT(success);
+            return success;
+        }
+
         template<typename Key, typename Value>
             requires(std::is_trivial_v<Key>())
         auto ReadMap(std::map<Key, Value>& map) -> void
@@ -32,8 +40,16 @@ namespace Eppo
             for (uint32_t i = 0; i < size; i++)
             {
                 Key key;
-                ReadRaw<Key>(key);
-                ReadRaw<Value>(map[key]);
+
+                if constexpr (std::is_trivial<Key>())
+                    ReadRaw<Key>(key);
+                else
+                    ReadObject<Key>(key);
+
+                if constexpr (std::is_trivial<Value>())
+                    ReadRaw<Value>(map[key]);
+                else
+                    ReadObject<Value>(map[key]);
             }
         }
 
@@ -49,8 +65,16 @@ namespace Eppo
             for (uint32_t i = 0; i < size; i++)
             {
                 Key key;
-                ReadRaw<Key>(key);
-                ReadRaw<Value>(map[key]);
+
+                if constexpr (std::is_trivial<Key>())
+                    ReadRaw<Key>(key);
+                else
+                    ReadObject<Key>(key);
+
+                if constexpr (std::is_trivial<Value>())
+                    ReadRaw<Value>(map[key]);
+                else
+                    ReadObject<Value>(map[key]);
             }
         }
 
@@ -66,7 +90,11 @@ namespace Eppo
             {
                 std::string key;
                 ReadString(key);
-                ReadRaw<Value>(map[key]);
+
+                if constexpr (std::is_trivial<Value>())
+                    ReadRaw<Value>(map[key]);
+                else
+                    ReadObject<Value>(map[key]);
             }
         }
 

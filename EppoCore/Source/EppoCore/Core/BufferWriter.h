@@ -23,6 +23,14 @@ namespace Eppo
             EP_ASSERT(success);
             return success;
         }
+        
+        template<typename T>
+        auto WriteObject(const T& value) -> bool
+        {
+            const bool success = T::Serialize(this, value);
+            EP_ASSERT(success);
+            return success;
+        }
 
         template<typename Key, typename Value>
             requires(std::is_trivial_v<Key>())
@@ -34,8 +42,15 @@ namespace Eppo
             // Write key/values
             for (const auto& [key, value] : map)
             {
-                WriteRaw<Key>(key);
-                WriteRaw<Value>(value);
+                if constexpr (std::is_trivial<Key>())
+                    WriteRaw<Key>(key);
+                else
+                    WriteObject<Key>(key);
+
+                if constexpr (std::is_trivial<Value>())
+                    WriteRaw<Value>(value);
+                else
+                    WriteObject<Value>(value);
             }
         }
 
@@ -49,8 +64,15 @@ namespace Eppo
             // Write key/values
             for (const auto& [key, value] : map)
             {
-                WriteRaw<Key>(key);
-                WriteRaw<Value>(value);
+                if constexpr (std::is_trivial<Key>())
+                    WriteRaw<Key>(key);
+                else
+                    WriteObject<Key>(key);
+
+                if constexpr (std::is_trivial<Value>())
+                    WriteRaw<Value>(value);
+                else
+                    WriteObject<Value>(value);
             }
         }
 
@@ -64,7 +86,11 @@ namespace Eppo
             for (const auto& [key, value] : map)
             {
                 WriteString(key);
-                WriteRaw<Value>(value);
+
+                if constexpr (std::is_trivial<Value>())
+                    WriteRaw<Value>(value);
+                else
+                    WriteObject<Value>(value);
             }
         }
 
