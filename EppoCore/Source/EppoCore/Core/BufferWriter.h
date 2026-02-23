@@ -44,9 +44,9 @@ namespace Eppo
             for (const auto& value : range)
             {
                 if constexpr (std::is_trivial<ValueType>())
-                    WriteRaw<T>(value);
+                    WriteRaw<ValueType>(value);
                 else
-                    WriteObject<T>(value);
+                    WriteObject<ValueType>(value);
             }
         }
 

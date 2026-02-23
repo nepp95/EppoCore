@@ -46,9 +46,9 @@ namespace Eppo
                 for (auto& element : range)
                 {
                     if constexpr (std::is_trivial<ValueType>())
-                        ReadRaw<T>(element);
+                        ReadRaw<ValueType>(element);
                     else
-                        ReadObject<T>(element);
+                        ReadObject<ValueType>(element);
                 }
             }
             else
