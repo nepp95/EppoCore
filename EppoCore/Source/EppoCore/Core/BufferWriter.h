@@ -32,6 +32,22 @@ namespace Eppo
             return success;
         }
 
+        template<typename T>
+        auto WriteVector(const std::vector<T>& v) -> void
+        {
+            // Write vector size
+            WriteRaw<uint32_t>(static_cast<uint32_t>(v.size()));
+
+            // Write data
+            for (const auto& value : v)
+            {
+                if constexpr (std::is_trivial<T>())
+                    WriteRaw<T>(value);
+                else
+                    WriteObject<T>(value);
+            }
+        }
+
         template<typename Key, typename Value>
         auto WriteMap(const std::map<Key, Value>& map) -> void
         {

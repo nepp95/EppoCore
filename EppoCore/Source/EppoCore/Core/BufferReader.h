@@ -28,6 +28,25 @@ namespace Eppo
             return success;
         }
 
+        template<typename T>
+        auto ReadVector(std::vector<T>& v) -> void
+        {
+            // Read vector size
+            uint32_t size;
+            ReadRaw<uint32_t>(size);
+
+            v.resize(size);
+
+            // Read data
+            for (uint32_t i = 0; i < size; i++)
+            {
+                if constexpr (std::is_trivial<T>())
+                    ReadRaw<T>(v[i]);
+                else
+                    ReadObject<T>(v[i]);
+            }
+        }
+
         template<typename Key, typename Value>
         auto ReadMap(std::map<Key, Value>& map) -> void
         {
