@@ -27,7 +27,7 @@ namespace Eppo
         if (!valid)
             return false;
 
-        std::memcpy(m_Buffer.As<uint8_t>(), data, size);
+        std::memcpy(m_Buffer.As<uint8_t>() + m_BufferPosition, data, size);
         m_BufferPosition += size;
 
         return true;
