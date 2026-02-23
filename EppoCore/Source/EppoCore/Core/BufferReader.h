@@ -28,22 +28,32 @@ namespace Eppo
             return success;
         }
 
-        template<typename T>
-        auto ReadVector(std::vector<T>& v) -> void
+        template<std::ranges::range T>
+        auto ReadRange(T& range) -> void
         {
-            // Read vector size
+            // Read range size
             uint32_t size;
             ReadRaw<uint32_t>(size);
 
-            v.resize(size);
-
-            // Read data
-            for (uint32_t i = 0; i < size; i++)
+            // Range must be resizable
+            if constexpr (requires(T t, size_t n) { t.resize(n); })
             {
-                if constexpr (std::is_trivial<T>())
-                    ReadRaw<T>(v[i]);
-                else
-                    ReadObject<T>(v[i]);
+                range.resize(size);
+
+                using ValueType = std::ranges::range_value_t<T>;
+
+                // Read data
+                for (auto& element : range)
+                {
+                    if constexpr (std::is_trivial<ValueType>())
+                        ReadRaw<T>(element);
+                    else
+                        ReadObject<T>(element);
+                }
+            }
+            else
+            {
+                static_assert(false);
             }
         }
 

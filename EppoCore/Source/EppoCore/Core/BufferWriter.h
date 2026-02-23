@@ -32,16 +32,18 @@ namespace Eppo
             return success;
         }
 
-        template<typename T>
-        auto WriteVector(const std::vector<T>& v) -> void
+        template<std::ranges::range T>
+        auto WriteRange(const T& range) -> void
         {
-            // Write vector size
-            WriteRaw<uint32_t>(static_cast<uint32_t>(v.size()));
+            // Write range size
+            WriteRaw<uint32_t>(static_cast<uint32_t>(std::ranges::size(range)));
+
+            using ValueType = std::ranges::range_value_t<T>;
 
             // Write data
-            for (const auto& value : v)
+            for (const auto& value : range)
             {
-                if constexpr (std::is_trivial<T>())
+                if constexpr (std::is_trivial<ValueType>())
                     WriteRaw<T>(value);
                 else
                     WriteObject<T>(value);
@@ -64,8 +66,8 @@ namespace Eppo
 
                 if constexpr (std::is_trivial<Value>())
                     WriteRaw<Value>(value);
-                else if constexpr (std::is_class<std::vector<Value>>())
-                    WriteVector<Value>(value);
+                else if constexpr (std::ranges::range<Value> && !std::is_same_v<Value, std::string>)
+                    WriteRange<Value>(value);
                 else
                     WriteObject<Value>(value);
             }
@@ -87,8 +89,8 @@ namespace Eppo
 
                 if constexpr (std::is_trivial<Value>())
                     WriteRaw<Value>(value);
-                else if constexpr (std::is_class<std::vector<Value>>())
-                    WriteVector<Value>(value);
+                else if constexpr (std::ranges::range<Value> && !std::is_same_v<Value, std::string>)
+                    WriteRange<Value>(value);
                 else
                     WriteObject<Value>(value);
             }
