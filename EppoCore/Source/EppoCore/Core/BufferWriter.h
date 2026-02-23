@@ -64,6 +64,8 @@ namespace Eppo
 
                 if constexpr (std::is_trivial<Value>())
                     WriteRaw<Value>(value);
+                else if constexpr (std::is_class<std::vector<Value>>())
+                    WriteVector<Value>(value);
                 else
                     WriteObject<Value>(value);
             }
@@ -85,6 +87,8 @@ namespace Eppo
 
                 if constexpr (std::is_trivial<Value>())
                     WriteRaw<Value>(value);
+                else if constexpr (std::is_class<std::vector<Value>>())
+                    WriteVector<Value>(value);
                 else
                     WriteObject<Value>(value);
             }

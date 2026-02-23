@@ -66,6 +66,8 @@ namespace Eppo
 
                 if constexpr (std::is_trivial<Value>())
                     ReadRaw<Value>(map[key]);
+                else if constexpr (std::is_class<std::vector<Value>>())
+                    ReadVector<Value>(map[key]);
                 else
                     ReadObject<Value>(map[key]);
             }
@@ -90,6 +92,8 @@ namespace Eppo
 
                 if constexpr (std::is_trivial<Value>())
                     ReadRaw<Value>(map[key]);
+                else if constexpr (std::is_class<std::vector<Value>>())
+                    ReadVector<Value>(map[key]);
                 else
                     ReadObject<Value>(map[key]);
             }
