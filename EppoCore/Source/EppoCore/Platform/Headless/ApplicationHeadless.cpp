@@ -42,8 +42,13 @@ namespace Eppo
             m_LastFrameTime = time;
 
             // Update layers
-            for (const auto& layer : m_LayerStack)
-                layer->OnUpdate(ts);
+            {
+                ZoneScopedN("Update");
+                for (const auto& layer : m_LayerStack)
+                    layer->OnUpdate(ts);
+            }
+
+            FrameMark;
         }
     }
 }

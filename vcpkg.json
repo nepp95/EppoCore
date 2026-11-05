@@ -1,0 +1,45 @@
+{
+  "name": "eppocore",
+  "version": "1.0.0",
+  "builtin-baseline": "8779f47d2db0785ee034b47fdfdcdb0e88b7010e",
+  "dependencies": [
+    "glfw3",
+    "glm",
+    {
+      "name": "imgui",
+      "features": [
+        "docking-experimental",
+        "glfw-binding"
+      ]
+    },
+    "spdlog",
+    {
+      "name": "tracy",
+      "features": [
+        "on-demand"
+      ]
+    }
+  ],
+  "overrides": [
+    {
+      "name": "glfw3",
+      "version": "3.4"
+    },
+    {
+      "name": "glm",
+      "version": "1.0.2"
+    },
+    {
+      "name": "imgui",
+      "version": "1.91.9"
+    },
+    {
+      "name": "spdlog",
+      "version-semver": "1.15.3"
+    },
+    {
+      "name": "fmt",
+      "version": "11.2.0"
+    }
+  ]
+}

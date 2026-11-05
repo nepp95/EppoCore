@@ -5,8 +5,7 @@ namespace Eppo
     class Shader
     {
     public:
-        // Vertex and Fragment shader sources
-        explicit Shader(const std::array<std::filesystem::path, 2>& filepaths);
+        explicit Shader();
         ~Shader();
 
         void Bind() const;

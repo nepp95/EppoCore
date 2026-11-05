@@ -3,6 +3,7 @@
 
 #include "Renderer.h"
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace Eppo
@@ -108,27 +109,41 @@ namespace Eppo
             const float ts = time - m_LastFrameTime;
             m_LastFrameTime = time;
 
-            Window::PollEvents();
+            {
+                ZoneScopedN("PollEvents");
+                Window::PollEvents();
+            }
 
             // Update layers
-            for (const auto& layer : m_LayerStack)
-                layer->OnUpdate(ts);
+            {
+                ZoneScopedN("Update");
+                for (const auto& layer : m_LayerStack)
+                    layer->OnUpdate(ts);
+            }
 
             // Update UI
-            for (const auto& layer : m_LayerStack)
-                layer->PreUIRender();
+            {
+                ZoneScopedN("UI");
+                for (const auto& layer : m_LayerStack)
+                    layer->PreUIRender();
 
-            m_ImGuiLayer->Begin();
+                m_ImGuiLayer->Begin();
 
-            for (const auto& layer : m_LayerStack)
-                layer->OnUIRender();
+                for (const auto& layer : m_LayerStack)
+                    layer->OnUIRender();
 
-            m_ImGuiLayer->End();
+                m_ImGuiLayer->End();
 
-            for (const auto& layer : m_LayerStack)
-                layer->PostUIRender();
+                for (const auto& layer : m_LayerStack)
+                    layer->PostUIRender();
+            }
 
-            m_Window->SwapBuffers();
+            {
+                ZoneScopedN("Present");
+                m_Window->SwapBuffers();
+            }
+
+            FrameMark;
         }
     }
 }

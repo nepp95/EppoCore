@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EppoCore/Core/Platform.h"
+
 #include <memory>
 
 #define BIND_EVENT_FN(fn)                                                                                                                  \

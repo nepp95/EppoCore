@@ -29,8 +29,7 @@ namespace Eppo
         uint32_t Width = 1280;
         uint32_t Height = 720;
 
-        std::filesystem::path LocalWorkingDirectory =
-            std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path();
+        std::filesystem::path LocalWorkingDirectory = std::filesystem::current_path();
         ApplicationCommandLineArgs CommandLineArgs;
     };
 }

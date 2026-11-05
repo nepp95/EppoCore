@@ -3,10 +3,8 @@
 
 #include "EppoCore/Core/Application.h"
 
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
 #include <imgui.h>
-#include <GLFW/glfw3.h>
+#include <imgui_impl_glfw.h>
 
 namespace Eppo
 {
@@ -34,20 +32,21 @@ namespace Eppo
         const auto& app = Application::Get();
         const auto window = app.GetWindow().GetNativeWindow();
 
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 450");
+        ImGui_ImplGlfw_InitForVulkan(window, true);
+
+        // ImGui's built-in font. Built here because there is no renderer backend yet to build the atlas, and NewFrame asserts without it
+        io.FontDefault = io.Fonts->AddFontDefault();
+        io.Fonts->Build();
     }
 
     void ImGuiLayer::OnDetach()
     {
-        ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
 
     void ImGuiLayer::Begin()
     {
-        ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
     }
@@ -61,14 +60,11 @@ namespace Eppo
 
         // Rendering
         ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            GLFWwindow* backupContext = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backupContext);
         }
     }
 }

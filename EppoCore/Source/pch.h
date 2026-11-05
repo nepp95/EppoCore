@@ -16,4 +16,6 @@
 #include <unordered_map>
 #include <vector>
 
+#include <tracy/Tracy.hpp>
+
 #include "EppoCore/Core/Base.h"

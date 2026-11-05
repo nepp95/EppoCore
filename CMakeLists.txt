@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.14)
 # Project
 project(EppoCore VERSION 1.0 LANGUAGES CXX)
 
-cmake_policy(SET CMP0169 OLD)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -23,7 +21,6 @@ set(PCH_SOURCE "EppoCore/Source/pch.cpp")
 
 set(INCLUDE_DIRS_GUI
     "EppoCore/Source"
-    "EppoCore/Vendor/glad/include"
 )
 
 set(INCLUDE_DIRS_HEADLESS
@@ -50,19 +47,33 @@ elseif (CMAKE_HOST_WIN32)
     target_compile_definitions(EppoCore_Headless PUBLIC EP_PLATFORM_WINDOWS EP_HEADLESS)
 endif ()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(EppoCore_GUI PUBLIC EP_DEBUG)
-    target_compile_definitions(EppoCore_Headless PUBLIC EP_DEBUG)
-else ()
-    target_compile_definitions(EppoCore_GUI PUBLIC EP_RELEASE)
-    target_compile_definitions(EppoCore_Headless PUBLIC EP_RELEASE)
-endif ()
+# Generator expression so multi-config generators (Visual Studio) get the right define per configuration
+target_compile_definitions(EppoCore_GUI PUBLIC $<IF:$<CONFIG:Debug>,EP_DEBUG,EP_RELEASE>)
+target_compile_definitions(EppoCore_Headless PUBLIC $<IF:$<CONFIG:Debug>,EP_DEBUG,EP_RELEASE>)
 
 # Packages
-add_subdirectory("EppoCore/Vendor/glad")
+target_link_libraries(EppoCore_GUI
+    PUBLIC glfw glm::glm imgui::imgui spdlog::spdlog Tracy::TracyClient Vulkan::Vulkan
+    PRIVATE Vulkan::shaderc_combined
+)
+target_link_libraries(EppoCore_Headless
+    PUBLIC glm::glm spdlog::spdlog Tracy::TracyClient Vulkan::Vulkan
+    PRIVATE Vulkan::shaderc_combined
+)
 
-target_link_libraries(EppoCore_GUI PUBLIC glad glfw glm imgui spdlog)
-target_link_libraries(EppoCore_Headless PUBLIC glm spdlog)
+if (CMAKE_HOST_LINUX)
+    target_link_directories(EppoCore_GUI PUBLIC "$ENV{VULKAN_SDK}/lib")
+    target_link_directories(EppoCore_Headless PUBLIC "$ENV{VULKAN_SDK}/lib")
+    target_link_libraries(EppoCore_GUI PUBLIC spirv-cross-core)
+    target_link_libraries(EppoCore_Headless PUBLIC spirv-cross-core)
+elseif (CMAKE_HOST_WIN32)
+    # Only the Windows SDK ships separate debug builds ('d' suffix)
+    target_link_directories(EppoCore_GUI PUBLIC "$ENV{VULKAN_SDK}/Lib")
+    target_link_directories(EppoCore_Headless PUBLIC "$ENV{VULKAN_SDK}/Lib")
+    target_link_libraries(EppoCore_GUI PUBLIC $<IF:$<CONFIG:Debug>,spirv-cross-cored,spirv-cross-core>)
+    target_link_libraries(EppoCore_Headless PUBLIC $<IF:$<CONFIG:Debug>,spirv-cross-cored,spirv-cross-core>)
+endif ()
+
 target_include_directories(EppoCore_GUI PUBLIC ${INCLUDE_DIRS_GUI})
 target_include_directories(EppoCore_Headless PUBLIC ${INCLUDE_DIRS_HEADLESS})
 target_precompile_headers(EppoCore_GUI PUBLIC ${PCH_HEADER})

@@ -1,6 +1,5 @@
 #pragma once
 
-typedef unsigned int GLenum;
 
 namespace Eppo
 {
@@ -21,8 +20,5 @@ namespace Eppo
 		uint32_t m_RendererID = 0;
 		uint32_t m_Width = 0;
 		uint32_t m_Height = 0;
-
-		GLenum m_InternalFormat;
-		GLenum m_DataFormat;
 	};
 }
