@@ -61,24 +61,30 @@ target_compile_definitions(EppoCore_Headless PUBLIC $<IF:$<CONFIG:Debug>,EP_DEBU
 # Packages
 target_link_libraries(EppoCore_GUI
     PUBLIC glfw glm::glm imgui::imgui spdlog::spdlog Tracy::TracyClient Vulkan::Vulkan
-    PRIVATE Vulkan::shaderc_combined
 )
 target_link_libraries(EppoCore_Headless
     PUBLIC glm::glm spdlog::spdlog Tracy::TracyClient Vulkan::Vulkan
-    PRIVATE Vulkan::shaderc_combined
 )
 
 if (CMAKE_HOST_LINUX)
     target_link_directories(EppoCore_GUI PUBLIC "$ENV{VULKAN_SDK}/lib")
     target_link_directories(EppoCore_Headless PUBLIC "$ENV{VULKAN_SDK}/lib")
-    target_link_libraries(EppoCore_GUI PUBLIC spirv-cross-core)
-    target_link_libraries(EppoCore_Headless PUBLIC spirv-cross-core)
+    target_link_libraries(EppoCore_GUI PRIVATE Vulkan::shaderc_combined PUBLIC spirv-cross-core)
+    target_link_libraries(EppoCore_Headless PRIVATE Vulkan::shaderc_combined PUBLIC spirv-cross-core)
 elseif (CMAKE_HOST_WIN32)
     # Only the Windows SDK ships separate debug builds ('d' suffix)
     target_link_directories(EppoCore_GUI PUBLIC "$ENV{VULKAN_SDK}/Lib")
     target_link_directories(EppoCore_Headless PUBLIC "$ENV{VULKAN_SDK}/Lib")
-    target_link_libraries(EppoCore_GUI PUBLIC $<IF:$<CONFIG:Debug>,spirv-cross-cored,spirv-cross-core>)
-    target_link_libraries(EppoCore_Headless PUBLIC $<IF:$<CONFIG:Debug>,spirv-cross-cored,spirv-cross-core>)
+    target_link_libraries(
+        EppoCore_GUI
+        PRIVATE $<IF:$<CONFIG:Debug>,shaderc_combinedd,shaderc_combined>
+        PUBLIC $<IF:$<CONFIG:Debug>,spirv-cross-cored,spirv-cross-core>
+    )
+    target_link_libraries(
+        EppoCore_Headless
+        PRIVATE $<IF:$<CONFIG:Debug>,shaderc_combinedd,shaderc_combined>
+        PUBLIC $<IF:$<CONFIG:Debug>,spirv-cross-cored,spirv-cross-core>
+    )
 endif ()
 
 target_include_directories(EppoCore_GUI PUBLIC ${INCLUDE_DIRS_GUI})
