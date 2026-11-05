@@ -1,0 +1,4 @@
+# Every text file is checked out with CRLF line endings, on every platform
+* text=auto eol=crlf
+# Shell scripts stay LF so they run on Linux
+*.sh text eol=lf
