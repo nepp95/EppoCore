@@ -6,6 +6,8 @@ project(EppoCore VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(GNUInstallDirs)
+
 option(EPPO_BUILD_HEADLESS "Build the app in headless mode" ON)
 option(EPPO_BUILD_GUI "Build the app in gui mode" ON)
 
@@ -83,3 +85,13 @@ target_include_directories(EppoCore_GUI PUBLIC ${INCLUDE_DIRS_GUI})
 target_include_directories(EppoCore_Headless PUBLIC ${INCLUDE_DIRS_HEADLESS})
 target_precompile_headers(EppoCore_GUI PUBLIC ${PCH_HEADER})
 target_precompile_headers(EppoCore_Headless PUBLIC ${PCH_HEADER})
+
+# Installation: the vcpkg port packages these files; premake consumers link the libraries and include the headers directly
+install(
+    TARGETS EppoCore_GUI EppoCore_Headless
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(DIRECTORY EppoCore/Source/EppoCore DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
+install(FILES EppoCore/Source/pch.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/EppoCore)
