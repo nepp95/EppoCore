@@ -13,10 +13,6 @@ namespace Eppo
         // Create uniform buffer
         m_UniformBuffer = std::make_unique<UniformBuffer>(sizeof(UboData), 0);
 
-        // Compile shader
-        m_QuadShader = std::make_unique<Shader>();
-        m_TextShader = std::make_unique<Shader>();
-
         // Setup index data
         const auto quadIndices = new uint32_t[MAX_INDICES];
         uint32_t offset = 0;

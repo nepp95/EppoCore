@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Image.h"
-#include "Shader.h"
+#include "EppoCore/GPU/Image.h"
+#include "EppoCore/GPU/Shader.h"
 #include "UniformBuffer.h"
 #include "Vertex.h"
 
