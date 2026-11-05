@@ -3,15 +3,20 @@
 
 namespace Eppo
 {
-    UniformBuffer::UniformBuffer(const uint32_t size, const uint32_t binding)
+    UniformBuffer::UniformBuffer(Device& device, const uint32_t size, const uint32_t binding)
+        : m_Binding(binding),
+          m_Buffer(
+              device,
+              GpuBufferSpecification{
+                  .Size = size, .Usage = BufferUsage::Uniform, .Memory = MemoryUsage::CpuToGpu, .DebugName = "Uniform buffer" }
+          )
     {
     }
 
-    UniformBuffer::~UniformBuffer()
-    {
-    }
+    UniformBuffer::~UniformBuffer() = default;
 
-    void UniformBuffer::SetData(const void* data, const uint32_t size) const
+    auto UniformBuffer::SetData(const void* data, const uint32_t size) -> void
     {
+        m_Buffer.Upload(data, size);
     }
 }

@@ -43,7 +43,9 @@ namespace Eppo
         m_Instance.reset();
     }
 
-    auto Device::Submit(CommandList& commandList) -> SubmitHandle
+    auto
+    Device::Submit(CommandList& commandList, const std::span<const SemaphoreSubmit> waits, const std::span<const SemaphoreSubmit> signals)
+        -> SubmitHandle
     {
         ZoneScoped;
 
@@ -53,7 +55,7 @@ namespace Eppo
         if (commandList.IsRecording())
             commandList.End();
 
-        const SubmitHandle handle = GetQueue(commandList.GetQueueType()).Submit(commandList.GetHandle());
+        const SubmitHandle handle = GetQueue(commandList.GetQueueType()).Submit(commandList.GetHandle(), waits, signals);
         commandList.MarkSubmitted();
 
         CollectGarbage();

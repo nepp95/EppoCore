@@ -3,6 +3,7 @@
 
 #include "EppoCore/Platform/GUI/Event/ApplicationEvent.h"
 
+// Vulkan is included first (through Window.h), so GLFW declares its Vulkan functions
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
@@ -75,11 +76,28 @@ namespace Eppo
         glfwPollEvents();
     }
 
-    void Window::SwapBuffers() const
+    auto Window::GetRequiredInstanceExtensions() -> std::vector<const char*>
     {
+        uint32_t count = 0;
+        const char** extensions = glfwGetRequiredInstanceExtensions(&count);
+        if (!extensions)
+            VkFatal("GLFW found no Vulkan support for presenting to windows");
+
+        return { extensions, extensions + count };
     }
 
-    void Window::SetVSync(const bool state)
+    auto Window::CreateSurface(const VkInstance instance) const -> VkSurfaceKHR
     {
+        VkSurfaceKHR surface = VK_NULL_HANDLE;
+        EP_VK_CHECK(glfwCreateWindowSurface(instance, m_Window, nullptr, &surface));
+        return surface;
+    }
+
+    auto Window::GetFramebufferSize() const -> std::pair<uint32_t, uint32_t>
+    {
+        int width = 0;
+        int height = 0;
+        glfwGetFramebufferSize(m_Window, &width, &height);
+        return { static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
     }
 }

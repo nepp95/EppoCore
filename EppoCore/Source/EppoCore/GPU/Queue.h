@@ -19,6 +19,13 @@ namespace Eppo
 
     constexpr uint32_t QueueTypeCount = 3;
 
+    // A binary semaphore a submission waits on or signals, e.g. swapchain acquire/present
+    struct SemaphoreSubmit
+    {
+        VkSemaphore Semaphore = VK_NULL_HANDLE;
+        VkPipelineStageFlags2 Stages = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
+    };
+
     // Completion of one submission, tracked through its queue's timeline semaphore
     class SubmitHandle
     {
@@ -50,7 +57,9 @@ namespace Eppo
         auto operator=(Queue&&) -> Queue& = delete;
 
         // Submits a finished command buffer; it signals the next timeline value when done
-        auto Submit(VkCommandBuffer commandBuffer) -> SubmitHandle;
+        auto
+        Submit(VkCommandBuffer commandBuffer, std::span<const SemaphoreSubmit> waits = {}, std::span<const SemaphoreSubmit> signals = {})
+            -> SubmitHandle;
         auto Wait(uint64_t value) const -> void;
         [[nodiscard]] auto GetCompletedValue() const -> uint64_t;
         [[nodiscard]] auto GetSubmittedValue() const -> uint64_t { return m_SubmittedValue; }

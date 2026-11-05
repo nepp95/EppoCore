@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EppoCore/GPU/Vulkan.h"
 #include "EppoCore/Platform/GUI/Event/Event.h"
 
 struct GLFWwindow;
@@ -14,7 +15,8 @@ namespace Eppo
 
         WindowSpecification(std::string title, const uint32_t width = 1280, const uint32_t height = 720)
             : Title(std::move(title)), Width(width), Height(height)
-        {}
+        {
+        }
     };
 
     class Window
@@ -27,9 +29,13 @@ namespace Eppo
 
         void SetEventCallbackFn(const EventCallbackFn& callback);
         static void PollEvents();
-        void SwapBuffers() const;
 
-        static void SetVSync(bool state);
+        // Instance extensions Vulkan needs to present to windows (valid once a window exists)
+        [[nodiscard]] static auto GetRequiredInstanceExtensions() -> std::vector<const char*>;
+        // The caller owns the surface and destroys it with vkDestroySurfaceKHR
+        [[nodiscard]] auto CreateSurface(VkInstance instance) const -> VkSurfaceKHR;
+        // Size in pixels (can differ from the window size on high-DPI displays); 0x0 while minimized
+        [[nodiscard]] auto GetFramebufferSize() const -> std::pair<uint32_t, uint32_t>;
 
         [[nodiscard]] uint32_t GetWidth() const { return m_Specification.Width; }
         [[nodiscard]] uint32_t GetHeight() const { return m_Specification.Height; }

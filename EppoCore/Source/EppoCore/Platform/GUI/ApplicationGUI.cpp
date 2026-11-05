@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "ApplicationGUI.h"
 
-#include "Renderer.h"
+#include "EppoCore/GPU/Device.h"
+#include "EppoCore/GPU/Instance.h"
+#include "EppoCore/Platform/GUI/Swapchain.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -26,16 +28,31 @@ namespace Eppo
             }
         );
 
+        // The device needs the window's surface extensions, and the swapchain needs the device
+        m_Device = std::make_unique<Device>(DeviceSpecification{
+            .InstanceExtensions = Window::GetRequiredInstanceExtensions(),
+            .DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+            .PipelineCachePath = m_Specification.LocalWorkingDirectory / "pipeline_cache.bin",
+        });
+        m_Swapchain = std::make_unique<Swapchain>(*m_Device, *m_Window, m_Specification.VSync);
+
         // Initialize renderer
-        m_Renderer = std::make_shared<Renderer>();
+        m_Renderer = std::make_shared<Renderer>(*m_Device);
 
         // Create UI layer
-        m_ImGuiLayer = std::make_shared<ImGuiLayer>();
+        m_ImGuiLayer = std::make_shared<ImGuiLayer>(*m_Device, *m_Swapchain);
         PushLayer(m_ImGuiLayer);
     }
 
     Application::~Application()
     {
+        if (m_Device)
+            m_Device->WaitIdle();
+
+        for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
+            (*it)->OnDetach();
+
+        m_LayerStack.clear();
         s_Instance = nullptr;
     }
 
@@ -67,6 +84,16 @@ namespace Eppo
     auto Application::GetWindow() const -> const Window&
     {
         return *m_Window;
+    }
+
+    auto Application::GetDevice() const -> Device&
+    {
+        return *m_Device;
+    }
+
+    auto Application::GetSwapchain() const -> Swapchain&
+    {
+        return *m_Swapchain;
     }
 
     auto Application::Get() -> Application&
@@ -114,6 +141,19 @@ namespace Eppo
                 Window::PollEvents();
             }
 
+            if (m_IsMinimized)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                FrameMark;
+                continue;
+            }
+
+            if (!m_Swapchain->BeginFrame())
+            {
+                FrameMark;
+                continue;
+            }
+
             // Update layers
             {
                 ZoneScopedN("Update");
@@ -140,8 +180,19 @@ namespace Eppo
 
             {
                 ZoneScopedN("Present");
-                m_Window->SwapBuffers();
+                CommandList& commandList = m_Swapchain->GetCommandList();
+                const RenderingSpecification renderingSpecification{
+                    .ColorAttachments = { ColorAttachment{
+                        .Target = &m_Swapchain->GetImage(), .Load = LoadOp::Clear, .ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f } } },
+                };
+                commandList.BeginRendering(renderingSpecification);
+                m_ImGuiLayer->Render(commandList);
+                commandList.EndRendering();
+
+                m_Swapchain->EndFrame();
             }
+
+            m_ImGuiLayer->RenderPlatformWindows();
 
             FrameMark;
         }

@@ -139,6 +139,11 @@ namespace Eppo
             m_BindlessIndex = m_Device->AddBindlessImage(m_View);
     }
 
+    Image::Image(Device& device, const VkImage image, const VkImageView view, ImageSpecification specification)
+        : m_Device(&device), m_Specification(std::move(specification)), m_Image(image), m_View(view), m_Owned(false)
+    {
+    }
+
     Image::~Image()
     {
         Release();
@@ -150,7 +155,8 @@ namespace Eppo
           m_Image(std::exchange(other.m_Image, VK_NULL_HANDLE)),
           m_Allocation(std::exchange(other.m_Allocation, VK_NULL_HANDLE)),
           m_View(std::exchange(other.m_View, VK_NULL_HANDLE)),
-          m_BindlessIndex(std::exchange(other.m_BindlessIndex, BindlessTable::InvalidIndex))
+          m_BindlessIndex(std::exchange(other.m_BindlessIndex, BindlessTable::InvalidIndex)),
+          m_Owned(other.m_Owned)
     {
     }
 
@@ -165,6 +171,7 @@ namespace Eppo
             m_Allocation = std::exchange(other.m_Allocation, VK_NULL_HANDLE);
             m_View = std::exchange(other.m_View, VK_NULL_HANDLE);
             m_BindlessIndex = std::exchange(other.m_BindlessIndex, BindlessTable::InvalidIndex);
+            m_Owned = other.m_Owned;
         }
 
         return *this;
@@ -200,6 +207,13 @@ namespace Eppo
     {
         if (!m_Image)
             return;
+
+        if (!m_Owned)
+        {
+            m_Image = VK_NULL_HANDLE;
+            m_View = VK_NULL_HANDLE;
+            return;
+        }
 
         m_Device->RemoveBindlessImage(m_BindlessIndex);
         m_Device->Defer(

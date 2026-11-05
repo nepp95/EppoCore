@@ -29,6 +29,8 @@ namespace Eppo
         uint32_t Width = 1280;
         uint32_t Height = 720;
 
+        bool VSync = true;
+
         std::filesystem::path LocalWorkingDirectory = std::filesystem::current_path();
         ApplicationCommandLineArgs CommandLineArgs;
     };

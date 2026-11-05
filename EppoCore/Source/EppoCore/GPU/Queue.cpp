@@ -100,7 +100,9 @@ namespace Eppo
         vkDestroySemaphore(m_Device, m_Timeline, nullptr);
     }
 
-    auto Queue::Submit(const VkCommandBuffer commandBuffer) -> SubmitHandle
+    auto Queue::Submit(
+        const VkCommandBuffer commandBuffer, const std::span<const SemaphoreSubmit> waits, const std::span<const SemaphoreSubmit> signals
+    ) -> SubmitHandle
     {
         ZoneScoped;
 
@@ -111,19 +113,32 @@ namespace Eppo
             .commandBuffer = commandBuffer,
         };
 
-        const VkSemaphoreSubmitInfo signalInfo{
-            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO,
-            .semaphore = m_Timeline,
-            .value = value,
-            .stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT,
+        std::vector<VkSemaphoreSubmitInfo> waitInfos;
+        for (const SemaphoreSubmit& wait : waits)
+            waitInfos.push_back(
+                { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO, .semaphore = wait.Semaphore, .stageMask = wait.Stages }
+            );
+
+        // The timeline semaphore first, then the extra binary ones
+        std::vector<VkSemaphoreSubmitInfo> signalInfos = {
+            { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO,
+             .semaphore = m_Timeline,
+             .value = value,
+             .stageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT },
         };
+        for (const SemaphoreSubmit& signal : signals)
+            signalInfos.push_back(
+                { .sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO, .semaphore = signal.Semaphore, .stageMask = signal.Stages }
+            );
 
         const VkSubmitInfo2 submitInfo{
             .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2,
+            .waitSemaphoreInfoCount = static_cast<uint32_t>(waitInfos.size()),
+            .pWaitSemaphoreInfos = waitInfos.data(),
             .commandBufferInfoCount = 1,
             .pCommandBufferInfos = &commandBufferInfo,
-            .signalSemaphoreInfoCount = 1,
-            .pSignalSemaphoreInfos = &signalInfo,
+            .signalSemaphoreInfoCount = static_cast<uint32_t>(signalInfos.size()),
+            .pSignalSemaphoreInfos = signalInfos.data(),
         };
 
         EP_VK_CHECK(vkQueueSubmit2(m_Queue, 1, &submitInfo, VK_NULL_HANDLE));

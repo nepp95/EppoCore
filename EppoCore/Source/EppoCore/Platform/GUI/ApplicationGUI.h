@@ -11,6 +11,9 @@ int main(int argc, char** argv);
 
 namespace Eppo
 {
+    class Device;
+    class Swapchain;
+
     class Application
     {
     public:
@@ -23,6 +26,8 @@ namespace Eppo
         [[nodiscard]] constexpr auto GetSpecification() const -> const ApplicationSpecification& { return m_Specification; }
         [[nodiscard]] auto GetRenderer() const -> std::shared_ptr<Renderer>;
         [[nodiscard]] auto GetWindow() const -> const Window&;
+        [[nodiscard]] auto GetDevice() const -> Device&;
+        [[nodiscard]] auto GetSwapchain() const -> Swapchain&;
 
         static auto Get() -> Application&;
 
@@ -38,8 +43,10 @@ namespace Eppo
     private:
         ApplicationSpecification m_Specification;
         std::unique_ptr<Window> m_Window;
-        std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
+        std::unique_ptr<Device> m_Device;
+        std::unique_ptr<Swapchain> m_Swapchain;
         std::shared_ptr<Renderer> m_Renderer;
+        std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
         std::vector<std::shared_ptr<Layer>> m_LayerStack;
 
         bool m_Running = true;

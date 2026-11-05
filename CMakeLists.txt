@@ -21,6 +21,7 @@ set(PCH_SOURCE "EppoCore/Source/pch.cpp")
 
 set(INCLUDE_DIRS_GUI
     "EppoCore/Source"
+    "EppoCore/Vendor/imgui"
 )
 
 set(INCLUDE_DIRS_HEADLESS
@@ -35,8 +36,12 @@ file(GLOB_RECURSE HEADLESS_SOURCES "EppoCore/Source/EppoCore/Platform/Headless/*
 file(GLOB_RECURSE HEADLESS_INCLUDES "EppoCore/Source/EppoCore/Platform/Headless/*.h")
 list(REMOVE_ITEM SOURCES_GUI ${HEADLESS_SOURCES})
 
+# ImGui's Vulkan backend, vendored (matching vcpkg's imgui version) so it builds against the Vulkan SDK
+set(IMGUI_VULKAN_SOURCE "EppoCore/Vendor/imgui/imgui_impl_vulkan.cpp")
+set_source_files_properties(${IMGUI_VULKAN_SOURCE} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
 # Create target
-add_library(EppoCore_GUI STATIC ${SOURCES_GUI})
+add_library(EppoCore_GUI STATIC ${SOURCES_GUI} ${IMGUI_VULKAN_SOURCE})
 add_library(EppoCore_Headless STATIC ${SOURCES_HEADLESS})
 
 if (CMAKE_HOST_LINUX)

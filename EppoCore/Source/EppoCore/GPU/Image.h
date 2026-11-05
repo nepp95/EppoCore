@@ -51,6 +51,8 @@ namespace Eppo
     {
     public:
         Image(Device& device, ImageSpecification specification);
+        // Wraps an image owned elsewhere (e.g. a swapchain image): never destroyed or added to the bindless table
+        Image(Device& device, VkImage image, VkImageView view, ImageSpecification specification);
         ~Image();
 
         Image(const Image&) = delete;
@@ -84,5 +86,6 @@ namespace Eppo
         VmaAllocation m_Allocation = VK_NULL_HANDLE;
         VkImageView m_View = VK_NULL_HANDLE;
         uint32_t m_BindlessIndex = UINT32_MAX;
+        bool m_Owned = true;
     };
 }

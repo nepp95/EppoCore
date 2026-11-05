@@ -47,7 +47,9 @@ namespace Eppo
         auto operator=(Device&&) -> Device& = delete;
 
         // Ends the command list if it's still recording, and submits it to its queue
-        auto Submit(CommandList& commandList) -> SubmitHandle;
+        // Optionally waits on / signals binary semaphores (e.g. swapchain acquire/present)
+        auto Submit(CommandList& commandList, std::span<const SemaphoreSubmit> waits = {}, std::span<const SemaphoreSubmit> signals = {})
+            -> SubmitHandle;
         auto WaitIdle() const -> void;
 
         // Runs destroy once all work submitted so far has finished on every queue
